@@ -25,7 +25,7 @@ def perform_sift_research(query, train):
     kp1, des1 = sift1.computeKeypointsAndDescriptors(img1)
     kp2, des2 = sift2.computeKeypointsAndDescriptors(img2)
 
-    sift1.showDOGImages()
+    sift1.showGaussianBlurImages()
 
     # Initialize and use FLANN
     FLANN_INDEX_KDTREE = 1

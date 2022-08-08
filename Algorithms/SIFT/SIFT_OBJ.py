@@ -467,9 +467,28 @@ class SIFT:
 ###############################
 # For Research Purposes #
 ###############################
+    def showGaussianBlurImages(self):
+        """Show breakdown of Gaussian Images while being scaled down on every octave"""
+    #     Updated
+        final_gaussian_images = []
+        for index, item in enumerate(self.gaussian_images):
+            for img in item:
+                final_gaussian_images.append(img)
+
+        print(len(final_gaussian_images))
+
+        # create a 10 by 10 grid here
+        plt.figure(figsize=(10, 10))  # specifying the overall grid size
+        for i in range(len(final_gaussian_images)):
+            plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
+            plt.title('Gaussian ' + str(i + 1))
+            plt.imshow(final_gaussian_images[i], cmap='Greys_r')
+        plt.tight_layout()
+        plt.show()
+
+
     def showDOGImages(self):
-        """Show breakdown of DOG images"""
-        # TODO: Compile sets of images in one line and display in one image
+        """Show breakdown of DOG images while being scaled down on every octave"""
         final_dog_images = []
         for index,item in enumerate(self.dog_images):
             for img in item:
@@ -479,19 +498,9 @@ class SIFT:
         plt.figure(figsize=(10, 10))  # specifying the overall grid size
         for i in range(len(final_dog_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
-            plt.title('Dog ' + str(i+1) )
+            plt.title('DoG ' + str(i+1) )
             plt.imshow(final_dog_images[i],cmap='Greys_r')
         plt.tight_layout()
         plt.show()
 
-    def showGaussianBlurImages(self):
-        """Show breakdown of Gaussian Images"""
-        # TODO: Compile sets of images in one line and display in one image
-        for i in range(0,len(self.gaussian_images)):
-            for n, img in enumerate(self.gaussian_images[i]):
-                plt.subplot(1, len(self.gaussian_images), 1 + n)
-                plt.title('Gaussian Blur Images')
-                plt.imshow(img, cmap='Greys_r')
-            plt.tight_layout()
-            plt.show()
 
