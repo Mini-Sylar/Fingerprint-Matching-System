@@ -4,13 +4,13 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-from SIFT import SIFT
 from SIFT import Performant_SIFT
 from SIFT import SIFT_OBJ
 
 
+
 def perform_sift_research(query, train):
-    start = datetime.now()
+    # start = datetime.now()
     MIN_MATCH_COUNT = 10
 
     img1 = cv2.imread(query, 0)  # queryImage
@@ -20,8 +20,6 @@ def perform_sift_research(query, train):
     sift2 = SIFT_OBJ.SIFT()
 
     # Compute SIFT keypoints and descriptors
-    # kp1, des1 = SIFT.computeKeypointsAndDescriptors(img1)
-    # kp2, des2 = SIFT.computeKeypointsAndDescriptors(img2)
     kp1, des1 = sift1.computeKeypointsAndDescriptors(img1)
     kp2, des2 = sift2.computeKeypointsAndDescriptors(img2)
 
@@ -39,7 +37,7 @@ def perform_sift_research(query, train):
     for m, n in matches:
         if m.distance < 0.7 * n.distance:
             good.add(m)
-    print(datetime.now() - start)
+    # print(datetime.now() - start)
     if len(good) > MIN_MATCH_COUNT:
         # ---------------------- Draw Results Old -----------------------
         # Estimate homography between template and scene
@@ -75,6 +73,7 @@ def perform_sift_research(query, train):
             cv2.line(newimg, pt1, pt2, (255, 0, 0))
 
         plt.imshow(newimg)
+        plt.get_current_fig_manager().canvas.set_window_title("Match Shown")
         plt.show()
     # ---------------------- Draw Results Old END -----------------------
     #     # DrawResults ----- NEW
@@ -92,8 +91,6 @@ def perform_sift_research(query, train):
 def perform_sift_performant(query, train):
     Performant_SIFT.perform_sift_performant(query, train)
 
-
-# start = timeit.default_timer()
 
 if __name__ == "__main__":
     # path_to_real_image = input("Enter path to original fingerprint: ")

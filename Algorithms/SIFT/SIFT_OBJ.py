@@ -2,7 +2,6 @@ from functools import cmp_to_key
 
 import cv2
 from matplotlib import pyplot as plt
-from mpl_toolkits.axes_grid1 import ImageGrid
 from numpy import all, array, arctan2, cos, sin, exp, dot, log, logical_and, roll, sqrt, stack, trace, deg2rad, rad2deg, \
     where, zeros, floor, round, float32
 from numpy.linalg import det, lstsq, norm
@@ -474,9 +473,6 @@ class SIFT:
         for index, item in enumerate(self.gaussian_images):
             for img in item:
                 final_gaussian_images.append(img)
-
-        print(len(final_gaussian_images))
-
         # create a 10 by 10 grid here
         plt.figure(figsize=(10, 10))  # specifying the overall grid size
         for i in range(len(final_gaussian_images)):
@@ -484,6 +480,7 @@ class SIFT:
             plt.title('Gaussian ' + str(i + 1))
             plt.imshow(final_gaussian_images[i], cmap='Greys_r')
         plt.tight_layout()
+        plt.get_current_fig_manager().canvas.set_window_title("Gaussian Images")
         plt.show()
 
 
@@ -501,6 +498,7 @@ class SIFT:
             plt.title('DoG ' + str(i+1) )
             plt.imshow(final_dog_images[i],cmap='Greys_r')
         plt.tight_layout()
+        plt.get_current_fig_manager().FigureManagerBase.set_window_title("Difference of Gaussian")
         plt.show()
 
 
