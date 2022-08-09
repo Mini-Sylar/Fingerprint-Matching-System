@@ -498,7 +498,7 @@ class SIFT:
             plt.title('DoG ' + str(i+1) )
             plt.imshow(final_dog_images[i],cmap='Greys_r')
         plt.tight_layout()
-        plt.get_current_fig_manager().FigureManagerBase.set_window_title("Difference of Gaussian")
+        plt.get_current_fig_manager().canvas.set_window_title("Difference of Gaussian")
         plt.show()
 
 

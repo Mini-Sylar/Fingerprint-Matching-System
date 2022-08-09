@@ -12,6 +12,7 @@ from SIFT import SIFT_OBJ
 def perform_sift_research(query, train):
     # start = datetime.now()
     MIN_MATCH_COUNT = 10
+    bestscore = 0
 
     img1 = cv2.imread(query, 0)  # queryImage
     img2 = cv2.imread(train, 0)  # trainImage
@@ -23,7 +24,8 @@ def perform_sift_research(query, train):
     kp1, des1 = sift1.computeKeypointsAndDescriptors(img1)
     kp2, des2 = sift2.computeKeypointsAndDescriptors(img2)
 
-    sift1.showGaussianBlurImages()
+    sift2.showGaussianBlurImages()
+    sift2.showDOGImages()
 
     # Initialize and use FLANN
     FLANN_INDEX_KDTREE = 1
@@ -35,7 +37,7 @@ def perform_sift_research(query, train):
     # Lowe's ratio test
     good = set()
     for m, n in matches:
-        if m.distance < 0.7 * n.distance:
+        if m.distance < 0.6 * n.distance:
             good.add(m)
     # print(datetime.now() - start)
     if len(good) > MIN_MATCH_COUNT:
@@ -74,7 +76,11 @@ def perform_sift_research(query, train):
 
         plt.imshow(newimg)
         plt.get_current_fig_manager().canvas.set_window_title("Match Shown")
+        plt.title("Matches Obtained")
         plt.show()
+
+    # Calculate Match Score here
+
     # ---------------------- Draw Results Old END -----------------------
     #     # DrawResults ----- NEW
     #     result  = cv2.drawMatches(img1,kp1,img2,kp2,good,None)

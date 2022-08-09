@@ -33,7 +33,7 @@ import pandas as pd
 # %%
 # KAGGLE FINGERPRINT DATA
 
-DATA_DIR = "C:\\Users\\Andy\\OneDrive\\Desktop\\PythonSIFT-master\\Images\\Real\\"
+DATA_DIR = "C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\"
 list_dirs = list(glob.glob(DATA_DIR+"*.BMP"))
 num_images = len(list_dirs)
 # %% [markdown]
