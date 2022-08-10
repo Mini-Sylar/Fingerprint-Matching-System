@@ -1,3 +1,4 @@
+import random
 import sys
 
 import cv2
@@ -5,6 +6,8 @@ import numpy as np
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from AlgorithmExamination import Ui_MainWindow
 from Algorithms.SIFT.SIFT_OBJ import SIFT
@@ -19,12 +22,21 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.kp1 = None
         self.des1 = None
         self.setupUi(self)
+        self.figure_match = plt.figure()
+        # self.axes = self.figure_match.add_subplot(111)
+        self.canvas = FigureCanvas(self.figure_match)
+        self.canvas.setParent(self)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.Final_Image_Container.addWidget(self.toolbar)
+        self.Final_Image_Container.addWidget(self.canvas)
         # Create 2 SIFT OBJECTS HERE
         self.sift_query = SIFT()
         self.sift_train = SIFT()
         # Connect functions to UI here
         self.set_parameters_sift()
         self.connect_functions()
+
+
 
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
@@ -73,12 +85,19 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.Min_Match.setText("10")
         self.Assumed_Blur.setText("0.5")
 
+
     def run_sift_research_version(self):
-        # self.kp1, self.des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
-        # self.kp2, self.des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
+
+
+        self.canvas.figure.clear()
+        self.statusbar.showMessage("Running research version of SIFT", msecs=10000)
         MIN_MATCH_COUNT = 10
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
+
+        # SHOW DOG
+        # self.show_DOG_images()
+
         # Initialize and use FLANN
         FLANN_INDEX_KDTREE = 1
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
@@ -125,22 +144,25 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 pt2 = (int(kp2[m.trainIdx].pt[0] + w1), int(kp2[m.trainIdx].pt[1]))
                 cv2.line(newimg, pt1, pt2, (255, 0, 0))
 
-            # SHOW IMAGE
-            height, width, channel = newimg.shape
-            bytesPerLine = 3 * width
-            qImg = QPixmap(QImage(newimg.data, width, height, bytesPerLine, QImage.Format_RGB888))
-            self.Show_SIFT_Manage.setPixmap(qImg)
-            self.Show_SIFT_Manage.resize(self.width(), self.height())
+            # SHOW Matched Image
+            # height, width, channel = newimg.shape
+            # bytesPerLine = 3 * width
+            # qImg = QPixmap(QImage(newimg.data, width, height, bytesPerLine, QImage.Format_RGB888))
+            # self.Show_SIFT_Manage.setPixmap(qImg)
+            # self.Show_SIFT_Manage.resize(self.width(), self.height())
+
+            # create an axis
 
             plt.imshow(newimg)
-            plt.get_current_fig_manager().canvas.set_window_title("Match Shown")
+            self.canvas.draw()
             plt.title("Matches Obtained")
-            plt.show()
             self.statusbar.showMessage("Matches found!", msecs=10000)
+
         else:
             self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT),
                                        msecs=10000)
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
+
 
 
 if __name__ == "__main__":
