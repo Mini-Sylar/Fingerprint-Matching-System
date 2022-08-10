@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="3" column="0" alignment="Qt::AlignHCenter">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="run_sift_performance">
       <property name="minimumSize">
        <size>
         <width>200</width>
@@ -297,7 +297,7 @@
      </layout>
     </item>
     <item row="2" column="0" alignment="Qt::AlignHCenter">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="run_sift_research">
       <property name="minimumSize">
        <size>
         <width>200</width>

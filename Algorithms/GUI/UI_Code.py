@@ -2,6 +2,7 @@ import sys
 
 import cv2
 import numpy as np
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
 
@@ -28,7 +29,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
         self.TrainImage.clicked.connect(self.load_image_train)
-        self.pushButton.clicked.connect(self.run_sift_research_version)
+        self.run_sift_research.clicked.connect(self.run_sift_research_version)
 
     def load_image_query(self, image=None):
         """Load query image here, throws an error if image is invalid"""
@@ -42,7 +43,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 self.query_image = cv2.imread(image[0], 0)
 
                 #   Add info on status bar
-                self.statusbar.showMessage("Successfully loaded query image",msecs=5000)
+                self.statusbar.showMessage("Successfully loaded query image", msecs=5000)
             except AttributeError as e:
                 print(e)
                 self.Path_To_Query.setText("Invalid image file loaded")
@@ -60,7 +61,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 self.train_image = cv2.imread(image[0], 0)
 
                 #   Add info on status bar
-                self.statusbar.showMessage("Successfully loaded training image",msecs=5000)
+                self.statusbar.showMessage("Successfully loaded training image", msecs=5000)
             except AttributeError as e:
                 print(e)
                 self.Path_To_Train.setText("Invalid image file loaded")
@@ -124,18 +125,20 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 pt2 = (int(kp2[m.trainIdx].pt[0] + w1), int(kp2[m.trainIdx].pt[1]))
                 cv2.line(newimg, pt1, pt2, (255, 0, 0))
 
+            # SHOW IMAGE
+            qImg = QPixmap(QImage(newimg.data, newimg.shape[0], newimg.shape[1], QImage.Format_RGB888))
+            self.Show_SIFT_Manage.setPixmap(qImg)
+            self.Show_SIFT_Manage.resize(self.width(), self.height())
+
             plt.imshow(newimg)
             plt.get_current_fig_manager().canvas.set_window_title("Match Shown")
             plt.title("Matches Obtained")
             plt.show()
             self.statusbar.showMessage("Matches found!", msecs=10000)
         else:
-            self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT), msecs=10000)
+            self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT),
+                                       msecs=10000)
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
-
-
-
-
 
 
 if __name__ == "__main__":
