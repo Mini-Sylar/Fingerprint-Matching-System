@@ -126,7 +126,9 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 cv2.line(newimg, pt1, pt2, (255, 0, 0))
 
             # SHOW IMAGE
-            qImg = QPixmap(QImage(newimg.data, newimg.shape[0], newimg.shape[1], QImage.Format_RGB888))
+            height, width, channel = newimg.shape
+            bytesPerLine = 3 * width
+            qImg = QPixmap(QImage(newimg.data, width, height, bytesPerLine, QImage.Format_RGB888))
             self.Show_SIFT_Manage.setPixmap(qImg)
             self.Show_SIFT_Manage.resize(self.width(), self.height())
 
@@ -144,5 +146,5 @@ class UI_Code(Ui_MainWindow, QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     UI = UI_Code()
-    UI.show()
+    UI.showNormal()
     sys.exit(app.exec_())
