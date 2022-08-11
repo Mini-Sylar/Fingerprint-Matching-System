@@ -258,7 +258,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         matches = flann.knnMatch(des1, des2, k=2)
 
         # Need to draw only good matches, so create a mask
-        matchesMask = [[0, 0] for i in range(len(matches))]
+        matchesMask = [[0, 0] for _ in range(len(matches))]
         good = set()
         # ratio test as per Lowe's paper
         for i, (m, n) in enumerate(matches):
@@ -303,8 +303,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:red;")
             self.Verdict.setText("Fingerprints Do Not Match!")
-
-        # plt.imshow(img3, ), plt.show()
 
 
 if __name__ == "__main__":

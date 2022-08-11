@@ -24,7 +24,7 @@ def perform_sift_performant(query, train):
     matches = flann.knnMatch(des1, des2, k=2)
 
     # Need to draw only good matches, so create a mask
-    matchesMask = [[0, 0] for i in range(len(matches))]
+    matchesMask = [[0, 0] for _ in range(len(matches))]
 
     # ratio test as per Lowe's paper
     for i, (m, n) in enumerate(matches):
