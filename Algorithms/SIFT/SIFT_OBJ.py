@@ -1,7 +1,6 @@
 from functools import cmp_to_key
 
 import cv2
-from matplotlib import pyplot as plt
 from numpy import all, array, arctan2, cos, sin, exp, dot, log, logical_and, roll, sqrt, stack, trace, deg2rad, rad2deg, \
     where, zeros, floor, round, float32
 from numpy.linalg import det, lstsq, norm

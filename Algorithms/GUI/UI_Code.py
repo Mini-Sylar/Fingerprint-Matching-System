@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -26,7 +27,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.kp1 = None
         self.des1 = None
         self.setupUi(self)
-        
+
         # Set Other Canvases Here
         self.canvases()
         # Create 2 SIFT OBJECTS HERE
@@ -42,6 +43,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.run_sift_research.clicked.connect(self.enableButtons)
         self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
+        # Run SIFT PERFORMANT VERSION
+        self.run_sift_performance.clicked.connect(self.run_sift_performant_version)
 
     def check_if_path_filled(self):
         default_text_train = "Path to training image will show here"
@@ -122,8 +125,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
             if m.distance < 0.6 * n.distance:
                 good.add(m)
         if len(good) > MIN_MATCH_COUNT:
-            # ---------------------- Draw Results Old -----------------------
-            # Estimate homography between template and scene
             src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
             dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
 
@@ -154,7 +155,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
                 pt1 = (int(kp1[m.queryIdx].pt[0]), int(kp1[m.queryIdx].pt[1] + hdif))
                 pt2 = (int(kp2[m.trainIdx].pt[0] + w1), int(kp2[m.trainIdx].pt[1]))
                 cv2.line(newimg, pt1, pt2, (255, 0, 0))
-            # create an axis
+            # create an axis and draw the images
             plt.figure(num=1)
             plt.imshow(newimg)
             self.canvas.draw()
@@ -168,7 +169,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
                 self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:green;")
-                self.Verdict.setText("Fingerprints Match!")
+                self.Verdict.setText("Fingerprints Are A Good Match!")
             elif len(good) > 18:
                 self.Match_Score.setStyleSheet("color:orange;")
                 self.Match_Score.setText("%d" % (len(good)))
@@ -234,6 +235,76 @@ class UiCode(Ui_MainWindow, QMainWindow):
             plt.imshow(doG_images[i], cmap='Greys_r')
             self.canvas_DOG.draw()
         plt.tight_layout()
+
+    ###############################
+    # SIFT PERFORMANT VERSION #
+    ###############################
+
+    def run_sift_performant_version(self):
+        self.canvas.figure.clear()
+        start = datetime.now()
+        # Initiate SIFT detector
+        sift = cv2.SIFT_create()
+
+        # find the keypoints and descriptors with SIFT
+        kp1, des1 = sift.detectAndCompute(self.query_image, None)
+        kp2, des2 = sift.detectAndCompute(self.train_image, None)
+
+        # FLANN parameters
+        FLANN_INDEX_KDTREE = 1
+        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        search_params = dict(checks=50)  # or pass empty dictionary
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+        matches = flann.knnMatch(des1, des2, k=2)
+
+        # Need to draw only good matches, so create a mask
+        matchesMask = [[0, 0] for i in range(len(matches))]
+        good = set()
+        # ratio test as per Lowe's paper
+        for i, (m, n) in enumerate(matches):
+            if m.distance < 0.6 * n.distance:
+                matchesMask[i] = [1, 0]
+                good.add(m)
+        print(datetime.now() - start)
+        print(len(good))
+        draw_params = dict(matchColor=(0, 255, 255),
+                           singlePointColor=(255, 0, 0),
+                           matchesMask=matchesMask,
+                           flags=cv2.DrawMatchesFlags_DEFAULT)
+        img3 = cv2.drawMatchesKnn(self.query_image, kp1, self.train_image, kp2, matches, None, **draw_params)
+        # create an axis and draw the images
+        plt.figure(num=1)
+        plt.imshow(img3)
+        self.canvas.draw()
+        plt.title("Matches Obtained")
+        plt.tight_layout()
+        # Extra Stuff
+        self.statusbar.showMessage("Matches found!", msecs=10000)
+        #     Populate some labels
+        # Get Match Score Here
+        if len(good) > 37:
+            self.Match_Score.setStyleSheet("color:green;")
+            self.Match_Score.setText("%d" % (len(good)))
+            # Set Verdict Here
+            self.Verdict.setStyleSheet("color:green;")
+            self.Verdict.setText("Fingerprints Are A Good Match!")
+        elif len(good) > 18:
+            self.Match_Score.setStyleSheet("color:orange;")
+            self.Match_Score.setText("%d" % (len(good)))
+            # Set Verdict Here
+            self.Verdict.setStyleSheet("color:orange;")
+            self.Verdict.setText("Fingerprints Match With A Really Low Score!")
+        else:
+            self.statusbar.showMessage("Not enough matches are found %d/37" % (len(good)),
+                                       msecs=10000)
+            # Set Match Score
+            self.Match_Score.setStyleSheet("color:red;")
+            self.Match_Score.setText("%d" % (len(good)))
+            # Set Verdict Here
+            self.Verdict.setStyleSheet("color:red;")
+            self.Verdict.setText("Fingerprints Do Not Match!")
+
+        # plt.imshow(img3, ), plt.show()
 
 
 if __name__ == "__main__":

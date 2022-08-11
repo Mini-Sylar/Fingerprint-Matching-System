@@ -28,7 +28,7 @@ def perform_sift_performant(query, train):
 
     # ratio test as per Lowe's paper
     for i, (m, n) in enumerate(matches):
-        if m.distance < 0.7 * n.distance:
+        if m.distance < 0.6 * n.distance:
             matchesMask[i] = [1, 0]
     print(datetime.now() - start)
     draw_params = dict(matchColor=(0, 255, 0),
