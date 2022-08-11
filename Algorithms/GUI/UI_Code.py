@@ -103,7 +103,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def set_parameters_sift(self):
         """Sets the parameters being used in both algorithms, might make them adjustable in future"""
         self.Sigma.setText('1.6')
-        self.Min_Match.setText("37")
+        self.Min_Match.setText("18")
         self.Assumed_Blur.setText("0.5")
 
     def run_sift_research_version(self):
@@ -112,7 +112,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         """
         self.canvas.figure.clear()
         self.statusbar.showMessage("Running research version of SIFT", msecs=10000)
-        MIN_MATCH_COUNT = 37
+        MIN_MATCH_COUNT = 18
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
 
@@ -163,7 +163,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             plt.figure(num=1)
             plt.imshow(newimg)
             self.canvas.draw()
-            plt.title("Matches Obtained")
+            plt.title("Matches Obtained Research")
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
             #     Populate some labels
@@ -174,7 +174,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:green;")
                 self.Verdict.setText("Fingerprints/Images Are A Good Match!")
-            elif len(good) > 15:
+            elif len(good) > 18:
                 self.Match_Score.setStyleSheet("color:orange;")
                 self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
@@ -279,7 +279,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         plt.figure(num=1)
         plt.imshow(img3)
         self.canvas.draw()
-        plt.title("Matches Obtained")
+        plt.title("Matches Obtained Performant")
         plt.tight_layout()
         # Extra Stuff
         self.statusbar.showMessage("Matches found!", msecs=10000)
