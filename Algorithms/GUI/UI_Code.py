@@ -4,12 +4,16 @@ from datetime import datetime
 import cv2
 import numpy as np
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
+from PyQt5.QtGui import QImageReader
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from AlgorithmExamination import Ui_MainWindow
 from Algorithms.SIFT.SIFT_OBJ import SIFT
+
+text_filter = "Images ({})".format(
+    " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
 
 
 class UiCode(Ui_MainWindow, QMainWindow):
@@ -62,7 +66,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def load_image_query(self, image=None):
         """Load query image here, throws an error if image is invalid"""
         if not image:
-            image = QFileDialog.getOpenFileName(self, 'Open Query Image', '', ".BMP(*.bmp)")
+            image = QFileDialog.getOpenFileName(self, 'Open Query Image', '', text_filter)
         if image[0]:
             try:
                 #   Set label to path
@@ -80,7 +84,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def load_image_train(self, image=None):
         """Load training image here, throws an error if image is invalid"""
         if not image:
-            image = QFileDialog.getOpenFileName(self, 'Open Query Image', '', ".BMP(*.bmp)")
+            image = QFileDialog.getOpenFileName(self, 'Open Query Image', '', text_filter)
         if image[0]:
             try:
                 #   Set label to path
@@ -169,13 +173,13 @@ class UiCode(Ui_MainWindow, QMainWindow):
                 self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:green;")
-                self.Verdict.setText("Fingerprints Are A Good Match!")
-            elif len(good) > 18:
+                self.Verdict.setText("Fingerprints/Images Are A Good Match!")
+            elif len(good) > 15:
                 self.Match_Score.setStyleSheet("color:orange;")
                 self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:orange;")
-                self.Verdict.setText("Fingerprints Match With A Really Low Score!")
+                self.Verdict.setText("Fingerprints/Images Match With A Really Low Score!")
 
         else:
             # TODO: Add clearing of diagram once matches are too low
@@ -187,7 +191,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:red;")
-            self.Verdict.setText("Fingerprints Do Not Match!")
+            self.Verdict.setText("Fingerprints/Images Are Not A Match!")
 
     def canvases(self):
         # Create Canvas for Matches
@@ -286,13 +290,13 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:green;")
-            self.Verdict.setText("Fingerprints Are A Good Match!")
-        elif len(good) > 18:
+            self.Verdict.setText("Fingerprints/Images Are A Good Match!")
+        elif len(good) > 15:
             self.Match_Score.setStyleSheet("color:orange;")
             self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:orange;")
-            self.Verdict.setText("Fingerprints Match With A Really Low Score!")
+            self.Verdict.setText("Fingerprints/Images Match With A Really Low Score!")
         else:
             self.statusbar.showMessage("Not enough matches are found %d/37" % (len(good)),
                                        msecs=10000)
@@ -301,7 +305,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:red;")
-            self.Verdict.setText("Fingerprints Do Not Match!")
+            self.Verdict.setText("Fingerprints/Images Are Not A Match!")
 
 
 if __name__ == "__main__":

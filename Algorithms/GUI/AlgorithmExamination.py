@@ -238,4 +238,3 @@ class Ui_MainWindow(object):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuAbout.setTitle(_translate("MainWindow", "About"))
         self.actionExport_All_Images.setText(_translate("MainWindow", "Export All Images"))
-import Images_rc

@@ -383,8 +383,6 @@
    </property>
   </action>
  </widget>
- <resources>
-  <include location="Images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
