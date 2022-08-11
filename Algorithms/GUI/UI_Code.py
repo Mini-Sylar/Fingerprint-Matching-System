@@ -97,13 +97,16 @@ class UI_Code(Ui_MainWindow, QMainWindow):
     def set_parameters_sift(self):
         """Sets the parameters being used in both algorithms, might make them adjustable in future"""
         self.Sigma.setText('1.6')
-        self.Min_Match.setText("10")
+        self.Min_Match.setText("37")
         self.Assumed_Blur.setText("0.5")
 
     def run_sift_research_version(self):
+        """ Runs the research version of the sift algorithm
+            Allows you to generate DOG images and Gaussian images
+        """
         self.canvas.figure.clear()
         self.statusbar.showMessage("Running research version of SIFT", msecs=10000)
-        MIN_MATCH_COUNT = 10
+        MIN_MATCH_COUNT = 37
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
 
@@ -160,6 +163,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             # self.Show_SIFT_Manage.setPixmap(qImg)
             # self.Show_SIFT_Manage.resize(self.width(), self.height())
 
+            print(len(good))
             # create an axis
             plt.figure(num=1)
             plt.imshow(newimg)
@@ -167,18 +171,31 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             plt.title("Matches Obtained")
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
-
         #     Populate some labels
+            # Get Match Score Here
+            if len(good)> 37:
+                self.Match_Score.setStyleSheet("color:green;")
+                self.Match_Score.setText("%d" % (len(good)))
+                # Set Verdict Here
+                self.Verdict.setStyleSheet("color:green;")
+                self.Verdict.setText("Fingerprints Match!")
+            elif len(good) > 18:
+                self.Match_Score.setStyleSheet("color:orange;")
+                self.Match_Score.setText("%d" % (len(good)))
+                # Set Verdict Here
+                self.Verdict.setStyleSheet("color:orange;")
+                self.Verdict.setText("Fingerprints Match With A Really Low Score!")
+
         else:
             self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT),
                                        msecs=10000)
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
             # Set Match Score
             self.Match_Score.setStyleSheet("color:red;")
-            self.Match_Score.setText("%d/%d" % (len(good), MIN_MATCH_COUNT))
+            self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:red;")
-            self.Verdict.setText("No Matches Found")
+            self.Verdict.setText("Fingerprints Do Not Match!")
 
     def canvases(self):
         # Create Canvas For Gaussian Images
