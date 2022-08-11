@@ -36,7 +36,6 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         # Connect functions to UI here
         self.set_parameters_sift()
         self.connect_functions()
-        print(len(self.Path_To_Query.text()))
 
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
@@ -169,12 +168,17 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
 
-
-
+        #     Populate some labels
         else:
             self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT),
                                        msecs=10000)
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
+            # Set Match Score
+            self.Match_Score.setStyleSheet("color:red;")
+            self.Match_Score.setText("%d/%d" % (len(good), MIN_MATCH_COUNT))
+            # Set Verdict Here
+            self.Verdict.setStyleSheet("color:red;")
+            self.Verdict.setText("No Matches Found")
 
     def canvases(self):
         # Create Canvas For Gaussian Images
