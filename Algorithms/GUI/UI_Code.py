@@ -126,7 +126,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Lowe's ratio test
         good = set()
         for m, n in matches:
-            if m.distance < 0.6 * n.distance:
+            if m.distance < 0.7 * n.distance:
                 good.add(m)
         if len(good) > MIN_MATCH_COUNT:
             src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
@@ -163,7 +163,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             plt.figure(num=1)
             plt.imshow(newimg)
             self.canvas.draw()
-            plt.title("Matches Obtained Research")
+            plt.title("Matches Obtained Research Version")
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
             #     Populate some labels
@@ -266,7 +266,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         good = set()
         # ratio test as per Lowe's paper
         for i, (m, n) in enumerate(matches):
-            if m.distance < 0.6 * n.distance:
+            if m.distance < 0.7 * n.distance:
                 matchesMask[i] = [1, 0]
                 good.add(m)
         print(datetime.now() - start)
@@ -279,7 +279,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         plt.figure(num=1)
         plt.imshow(img3)
         self.canvas.draw()
-        plt.title("Matches Obtained Performant")
+        plt.title("Matches Obtained Performant Version")
         plt.tight_layout()
         # Extra Stuff
         self.statusbar.showMessage("Matches found!", msecs=10000)
