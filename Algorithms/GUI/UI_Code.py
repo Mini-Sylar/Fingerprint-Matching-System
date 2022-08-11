@@ -36,6 +36,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         # Connect functions to UI here
         self.set_parameters_sift()
         self.connect_functions()
+        print(len(self.Path_To_Query.text()))
 
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
@@ -43,6 +44,14 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.run_sift_research.clicked.connect(self.enableButtons)
         self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
+
+    def check_if_path_filled(self):
+        default_text_train = "Path to training image will show here"
+        default_text_query = "Path to query image will show here"
+        if self.Path_To_Train.text() != default_text_train and self.Path_To_Query.text() != default_text_query:
+            self.run_sift_research.setEnabled(True)
+            self.run_sift_performance.setEnabled(True)
+            self.run_minutiae.setEnabled(True)
 
     def enableButtons(self):
         self.run_sift_research_version()
@@ -61,6 +70,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 self.query_image = cv2.imread(image[0], 0)
                 #   Add info on status bar
                 self.statusbar.showMessage("Successfully loaded query image", msecs=5000)
+                self.check_if_path_filled()
             except AttributeError as e:
                 print(e)
                 self.Path_To_Query.setText("Invalid image file loaded")
@@ -79,6 +89,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
 
                 #   Add info on status bar
                 self.statusbar.showMessage("Successfully loaded training image", msecs=5000)
+                self.check_if_path_filled()
             except AttributeError as e:
                 print(e)
                 self.Path_To_Train.setText("Invalid image file loaded")

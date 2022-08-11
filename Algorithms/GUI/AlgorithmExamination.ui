@@ -238,6 +238,9 @@
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0" alignment="Qt::AlignLeft">
         <widget class="QPushButton" name="run_sift_research">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="minimumSize">
           <size>
            <width>200</width>
@@ -267,6 +270,9 @@
        </item>
        <item row="0" column="1" alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="run_sift_performance">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Run SIFT Algorithm (Performance)</string>
          </property>
@@ -289,7 +295,10 @@
         </widget>
        </item>
        <item row="0" column="2" alignment="Qt::AlignRight">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="run_minutiae">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="minimumSize">
           <size>
            <width>200</width>
