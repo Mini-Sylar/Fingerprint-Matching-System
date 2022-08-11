@@ -1,11 +1,10 @@
-import random
 import sys
 
 import cv2
 import numpy as np
-from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -22,13 +21,15 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.kp1 = None
         self.des1 = None
         self.setupUi(self)
-        self.figure_match = plt.figure()
-        # self.axes = self.figure_match.add_subplot(111)
+        # Set Canvases Here
+        self.figure_match = plt.figure(num=1)
         self.canvas = FigureCanvas(self.figure_match)
         self.canvas.setParent(self)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.Final_Image_Container.addWidget(self.toolbar)
         self.Final_Image_Container.addWidget(self.canvas)
+        # Set Other Canvases Here
+        self.canvases()
         # Create 2 SIFT OBJECTS HERE
         self.sift_query = SIFT()
         self.sift_train = SIFT()
@@ -42,6 +43,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.QueryImage.clicked.connect(self.load_image_query)
         self.TrainImage.clicked.connect(self.load_image_train)
         self.run_sift_research.clicked.connect(self.run_sift_research_version)
+        self.run_sift_performance.clicked.connect(self.show_DOG_SIFT_Research)
 
     def load_image_query(self, image=None):
         """Load query image here, throws an error if image is invalid"""
@@ -87,16 +89,11 @@ class UI_Code(Ui_MainWindow, QMainWindow):
 
 
     def run_sift_research_version(self):
-
-
         self.canvas.figure.clear()
         self.statusbar.showMessage("Running research version of SIFT", msecs=10000)
         MIN_MATCH_COUNT = 10
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
-
-        # SHOW DOG
-        # self.show_DOG_images()
 
         # Initialize and use FLANN
         FLANN_INDEX_KDTREE = 1
@@ -152,16 +149,40 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             # self.Show_SIFT_Manage.resize(self.width(), self.height())
 
             # create an axis
-
+            plt.figure(num=1)
             plt.imshow(newimg)
             self.canvas.draw()
             plt.title("Matches Obtained")
             self.statusbar.showMessage("Matches found!", msecs=10000)
 
+
+
         else:
             self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT),
                                        msecs=10000)
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
+
+    def canvases(self):
+        # Create Canvas And Add
+        figure_DOG = plt.figure(num=2,figsize=(10, 10))
+        self.canvas_DOG = FigureCanvas(figure_DOG)
+        # canvas_DOG.setParent(canvas_DOG)
+        toolbar_DOG = NavigationToolbar(self.canvas_DOG, self)
+        self.Show_DOG_Image.addWidget(toolbar_DOG)
+        self.Show_DOG_Image.addWidget(self.canvas_DOG)
+
+    def show_DOG_SIFT_Research(self):
+        self.canvas_DOG.figure.clear()
+        # Render Images
+        doG_images = self.sift_train.showDOGImages()
+        # # create a 10 by 10 grid here
+        plt.figure(num=2,figsize=(10, 10))  # specifying the overall grid size
+        for i in range(len(doG_images)):
+            plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
+            # plt.title('DoG ' + str(i+1) )
+            plt.imshow(doG_images[i],cmap='Greys_r')
+            self.canvas_DOG.draw()
+        plt.tight_layout()
 
 
 

@@ -491,14 +491,15 @@ class SIFT:
             for img in item:
                 final_dog_images.append(img)
 
-        # create a 10 by 10 grid here
-        plt.figure(figsize=(10, 10))  # specifying the overall grid size
-        for i in range(len(final_dog_images)):
-            plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
-            plt.title('DoG ' + str(i+1) )
-            plt.imshow(final_dog_images[i],cmap='Greys_r')
-        plt.tight_layout()
-        plt.get_current_fig_manager().canvas.set_window_title("Difference of Gaussian")
-        plt.show()
+        return final_dog_images
+        # # create a 10 by 10 grid here
+        # plt.figure(figsize=(10, 10))  # specifying the overall grid size
+        # for i in range(len(final_dog_images)):
+        #     plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
+        #     plt.title('DoG ' + str(i+1) )
+        #     plt.imshow(final_dog_images[i],cmap='Greys_r')
+        # plt.tight_layout()
+        # plt.get_current_fig_manager().canvas.set_window_title("Difference of Gaussian")
+        # plt.show()
 
 
