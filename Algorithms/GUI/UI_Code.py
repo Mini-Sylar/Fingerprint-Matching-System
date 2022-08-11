@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -12,22 +11,22 @@ from AlgorithmExamination import Ui_MainWindow
 from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 
-class UI_Code(Ui_MainWindow, QMainWindow):
+class UiCode(Ui_MainWindow, QMainWindow):
     def __init__(self):
-        super(UI_Code, self).__init__()
+        super(UiCode, self).__init__()
+        self.toolbar = None
+        self.canvas = None
+        self.figure_match = None
+        self.canvas_DOG = None
+        self.canvas_Gaussian = None
+        self.query_image = None
         self.des2 = None
         self.kp2 = None
         self.train_image = None
         self.kp1 = None
         self.des1 = None
         self.setupUi(self)
-        # Set Canvases Here
-        self.figure_match = plt.figure(num=1)
-        self.canvas = FigureCanvas(self.figure_match)
-        self.canvas.setParent(self)
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        self.Final_Image_Container.addWidget(self.toolbar)
-        self.Final_Image_Container.addWidget(self.canvas)
+        
         # Set Other Canvases Here
         self.canvases()
         # Create 2 SIFT OBJECTS HERE
@@ -155,15 +154,6 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 pt1 = (int(kp1[m.queryIdx].pt[0]), int(kp1[m.queryIdx].pt[1] + hdif))
                 pt2 = (int(kp2[m.trainIdx].pt[0] + w1), int(kp2[m.trainIdx].pt[1]))
                 cv2.line(newimg, pt1, pt2, (255, 0, 0))
-
-            # SHOW Matched Image
-            # height, width, channel = newimg.shape
-            # bytesPerLine = 3 * width
-            # qImg = QPixmap(QImage(newimg.data, width, height, bytesPerLine, QImage.Format_RGB888))
-            # self.Show_SIFT_Manage.setPixmap(qImg)
-            # self.Show_SIFT_Manage.resize(self.width(), self.height())
-
-            print(len(good))
             # create an axis
             plt.figure(num=1)
             plt.imshow(newimg)
@@ -171,9 +161,9 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             plt.title("Matches Obtained")
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
-        #     Populate some labels
+            #     Populate some labels
             # Get Match Score Here
-            if len(good)> 37:
+            if len(good) > 37:
                 self.Match_Score.setStyleSheet("color:green;")
                 self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
@@ -187,6 +177,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 self.Verdict.setText("Fingerprints Match With A Really Low Score!")
 
         else:
+            # TODO: Add clearing of diagram once matches are too low
             self.statusbar.showMessage("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT),
                                        msecs=10000)
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
@@ -198,6 +189,14 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             self.Verdict.setText("Fingerprints Do Not Match!")
 
     def canvases(self):
+        # Create Canvas for Matches
+        # Set Canvases Here
+        self.figure_match = plt.figure(num=1)
+        self.canvas = FigureCanvas(self.figure_match)
+        self.canvas.setParent(self)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.Final_Image_Container.addWidget(self.toolbar)
+        self.Final_Image_Container.addWidget(self.canvas)
         # Create Canvas For Gaussian Images
         figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
         self.canvas_Gaussian = FigureCanvas(figure_Gaussian)
@@ -239,6 +238,6 @@ class UI_Code(Ui_MainWindow, QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    UI = UI_Code()
+    UI = UiCode()
     UI.showNormal()
     sys.exit(app.exec_())
