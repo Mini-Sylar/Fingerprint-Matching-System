@@ -40,9 +40,14 @@ class UI_Code(Ui_MainWindow, QMainWindow):
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
         self.TrainImage.clicked.connect(self.load_image_train)
-        self.run_sift_research.clicked.connect(self.run_sift_research_version)
-        self.run_sift_performance.clicked.connect(self.show_DOG_SIFT_Research)
-        self.pushButton_3.clicked.connect(self.show_Gaussian_SIFT_Research)
+        self.run_sift_research.clicked.connect(self.enableButtons)
+        self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
+        self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
+
+    def enableButtons(self):
+        self.run_sift_research_version()
+        self.generate_DOG_images.setEnabled(True)
+        self.generate_gaussian_images.setEnabled(True)
 
     def load_image_query(self, image=None):
         """Load query image here, throws an error if image is invalid"""
@@ -54,7 +59,6 @@ class UI_Code(Ui_MainWindow, QMainWindow):
                 self.Path_To_Query.setText(image[0])
                 #   Assign Image to sift_query
                 self.query_image = cv2.imread(image[0], 0)
-
                 #   Add info on status bar
                 self.statusbar.showMessage("Successfully loaded query image", msecs=5000)
             except AttributeError as e:
