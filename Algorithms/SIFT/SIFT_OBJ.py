@@ -473,15 +473,17 @@ class SIFT:
         for index, item in enumerate(self.gaussian_images):
             for img in item:
                 final_gaussian_images.append(img)
+
+        return final_gaussian_images
         # create a 10 by 10 grid here
-        plt.figure(figsize=(10, 10))  # specifying the overall grid size
-        for i in range(len(final_gaussian_images)):
-            plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
-            plt.title('Gaussian ' + str(i + 1))
-            plt.imshow(final_gaussian_images[i], cmap='Greys_r')
-        plt.tight_layout()
-        plt.get_current_fig_manager().canvas.set_window_title("Gaussian Images")
-        plt.show()
+        # plt.figure(figsize=(10, 10))  # specifying the overall grid size
+        # for i in range(len(final_gaussian_images)):
+        #     plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
+        #     plt.title('Gaussian ' + str(i + 1))
+        #     plt.imshow(final_gaussian_images[i], cmap='Greys_r')
+        # plt.tight_layout()
+        # plt.get_current_fig_manager().canvas.set_window_title("Gaussian Images")
+        # plt.show()
 
 
     def showDOGImages(self):

@@ -37,13 +37,12 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.set_parameters_sift()
         self.connect_functions()
 
-
-
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
         self.TrainImage.clicked.connect(self.load_image_train)
         self.run_sift_research.clicked.connect(self.run_sift_research_version)
         self.run_sift_performance.clicked.connect(self.show_DOG_SIFT_Research)
+        self.pushButton_3.clicked.connect(self.show_Gaussian_SIFT_Research)
 
     def load_image_query(self, image=None):
         """Load query image here, throws an error if image is invalid"""
@@ -86,7 +85,6 @@ class UI_Code(Ui_MainWindow, QMainWindow):
         self.Sigma.setText('1.6')
         self.Min_Match.setText("10")
         self.Assumed_Blur.setText("0.5")
-
 
     def run_sift_research_version(self):
         self.canvas.figure.clear()
@@ -153,6 +151,7 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             plt.imshow(newimg)
             self.canvas.draw()
             plt.title("Matches Obtained")
+            plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
 
 
@@ -163,27 +162,43 @@ class UI_Code(Ui_MainWindow, QMainWindow):
             print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
 
     def canvases(self):
+        # Create Canvas For Gaussian Images
+        figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
+        self.canvas_Gaussian = FigureCanvas(figure_Gaussian)
+        toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
+        self.Show_Gaussian_Images.addWidget(toolbar_Gaussian)
+        self.Show_Gaussian_Images.addWidget(self.canvas_Gaussian)
         # Create Canvas And Add
-        figure_DOG = plt.figure(num=2,figsize=(10, 10))
+        figure_DOG = plt.figure(num=3, figsize=(10, 10))
         self.canvas_DOG = FigureCanvas(figure_DOG)
         # canvas_DOG.setParent(canvas_DOG)
         toolbar_DOG = NavigationToolbar(self.canvas_DOG, self)
         self.Show_DOG_Image.addWidget(toolbar_DOG)
         self.Show_DOG_Image.addWidget(self.canvas_DOG)
 
+    def show_Gaussian_SIFT_Research(self):
+        self.canvas_Gaussian.figure.clear()
+        # Render Images
+        Gaussian_images = self.sift_train.showGaussianBlurImages()
+        # create a 10 by 10 grid here
+        plt.figure(num=2, figsize=(10, 10))  # specifying the overall grid size
+        for i in range(len(Gaussian_images)):
+            plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
+            plt.imshow(Gaussian_images[i], cmap='Greys_r')
+            self.canvas_Gaussian.draw()
+        plt.tight_layout()
+
     def show_DOG_SIFT_Research(self):
         self.canvas_DOG.figure.clear()
         # Render Images
         doG_images = self.sift_train.showDOGImages()
         # # create a 10 by 10 grid here
-        plt.figure(num=2,figsize=(10, 10))  # specifying the overall grid size
+        plt.figure(num=3, figsize=(10, 10))  # specifying the overall grid size
         for i in range(len(doG_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
-            # plt.title('DoG ' + str(i+1) )
-            plt.imshow(doG_images[i],cmap='Greys_r')
+            plt.imshow(doG_images[i], cmap='Greys_r')
             self.canvas_DOG.draw()
         plt.tight_layout()
-
 
 
 if __name__ == "__main__":
