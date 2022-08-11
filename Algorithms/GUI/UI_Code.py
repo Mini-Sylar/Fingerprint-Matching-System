@@ -266,7 +266,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
                 matchesMask[i] = [1, 0]
                 good.add(m)
         print(datetime.now() - start)
-        print(len(good))
         draw_params = dict(matchColor=(0, 255, 255),
                            singlePointColor=(255, 0, 0),
                            matchesMask=matchesMask,
