@@ -166,17 +166,16 @@ class UiCode(Ui_MainWindow, QMainWindow):
             plt.title("Matches Obtained Research Version")
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
+            self.Match_Score.setText("%d" % (len(good)))
             #     Populate some labels
             # Get Match Score Here
             if len(good) > 37:
                 self.Match_Score.setStyleSheet("color:green;")
-                self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:green;")
                 self.Verdict.setText("Fingerprints/Images Are A Good Match!")
             elif len(good) > 18:
                 self.Match_Score.setStyleSheet("color:orange;")
-                self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:orange;")
                 self.Verdict.setText("Fingerprints/Images Match With A Really Low Score!")
@@ -283,17 +282,16 @@ class UiCode(Ui_MainWindow, QMainWindow):
         plt.tight_layout()
         # Extra Stuff
         self.statusbar.showMessage("Matches found!", msecs=10000)
+        self.Match_Score.setText("%d" % (len(good)))
         #     Populate some labels
         # Get Match Score Here
         if len(good) > 37:
             self.Match_Score.setStyleSheet("color:green;")
-            self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:green;")
             self.Verdict.setText("Fingerprints/Images Are A Good Match!")
         elif len(good) > 15:
             self.Match_Score.setStyleSheet("color:orange;")
-            self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:orange;")
             self.Verdict.setText("Fingerprints/Images Match With A Really Low Score!")
