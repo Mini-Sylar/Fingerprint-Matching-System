@@ -1,17 +1,3 @@
-# %% [markdown]
-# # Fingerprint Feature Extraction
-#
-
-# %% [markdown]
-# ### Introduction:
-#
-# Fingerprint biometrics involve: Image Acquisition, Image Enhancing, Feature extraction and matching with template. Since the dataset has unique fingerprints I will implement feature extraction and different techniques for enhancing images such as Edge detection, adaptive thresholding. Feature extraction constitutes of Ridge detection (level 1 feature) and Minutiae extraction (level 3 feature) to generate a template after whicha query image is matched using the metric ROC AUC curve.
-#
-
-# %% [markdown]
-# ### Dependencies and Data
-
-# %%
 from PIL import Image, ImageFilter
 from skimage.feature import hessian_matrix, hessian_matrix_eigvals
 from scipy.ndimage import convolve
@@ -28,18 +14,11 @@ import imageio
 import PIL
 import cv2
 import pandas as pd
-# %matplotlib inline
 
-# %%
-# KAGGLE FINGERPRINT DATA
 
 DATA_DIR = "C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\"
 list_dirs = list(glob.glob(DATA_DIR+"*.BMP"))
 num_images = len(list_dirs)
-# %% [markdown]
-# ### Displaying random images from data
-
-# %%
 random.seed(42)
 
 r = random.randint(0, num_images)
@@ -54,8 +33,8 @@ axes[0].imshow(image1)
 axes[1].imshow(image2)
 axes[2].imshow(image3)
 
-# %% [markdown]
-# ### Image Transforms
+
+# Image Transforms
 #
 # 1. Image Smoothening
 # 2. Thresholding
@@ -63,7 +42,7 @@ axes[2].imshow(image3)
 #
 # Image enhancement and preprocessing techniques such as smoothing, thresholding and edge detection are used to make features more prominent in data for extraction to be more accurate.
 
-# %%
+
 gauss_blur = cv2.GaussianBlur(image1, (1, 1), 0)
 median_blur = cv2.medianBlur(image1, 1)
 
@@ -122,18 +101,14 @@ axes[1].imshow(th2)
 axes[2].set_title("Otsu's thresholding - Image 3")
 axes[2].imshow(th2)
 
-# %% [markdown]
 # ### Edge detection:
 
-# %%
 # convert to grayscale
 img_name = display_list[0]
 gray_img_array = np.array(Image.open(img_name).convert('P'))
 
-# %% [markdown]
 # Robert, Sobel, Prewitt Filters
 
-# %%
 vertical_robert_filter = np.array([[1, 0], [0, -1]])
 horizontal_robert_filter = np.array([[0, 1], [-1, 0]])
 
@@ -151,7 +126,6 @@ print("horizontal sobel filter: \n", horizontal_sobel_filter)
 print("vertical prewitt filter: \n", vertical_prewitt_filter)
 print("horizontal prewitt filter: \n", horizontal_prewitt_filter)
 
-# %%
 # implementing:
 gray_img = Image.fromarray(gray_img_array)
 
@@ -164,7 +138,6 @@ convolved_img2 = convolve(convolved_img2, horizontal_sobel_filter)
 convolved_img3 = convolve(gray_img, vertical_prewitt_filter)
 convolved_img3 = convolve(gray_img, horizontal_prewitt_filter)
 
-# %%
 fig, axes = plt.subplots(1, 3, figsize=(12, 12))
 axes[0].set_title("Robert")
 axes[0].imshow(convolved_img1)
@@ -173,10 +146,8 @@ axes[1].imshow(convolved_img2)
 axes[2].set_title("Prewitt")
 axes[2].imshow(convolved_img3)
 
-# %% [markdown]
 # ### Ridge Detection
 
-# %%
 src_path = img_name
 
 
@@ -205,14 +176,10 @@ a, b = detect_ridges(img, sigma=0.15)
 
 plot_images(img, a, b)
 
-# %% [markdown]
 # ### Termination and Bifurcation detection and Minutiae Extraction
 #
 # The given code extracts features like Termination, Bifurcation and Minutiae from finger prints, the output is shown below the code:
 #
-
-# %%
-
 
 def getTerminationBifurcation(img, mask):
     img = img == 255
@@ -234,8 +201,6 @@ def getTerminationBifurcation(img, mask):
     mask = erosion(mask, square(5))
     minutiaeTerm = np.uint8(mask)*minutiaeTerm
     return(minutiaeTerm, minutiaeBif)
-
-# %%
 
 
 class MinutiaeFeature(object):
@@ -331,8 +296,6 @@ def ShowResults(skel, TermLabel, BifLabel):
     plt.figure(figsize=(6, 6))
     plt.title("Minutiae extraction results")
     plt.imshow(DispImg)
-
-# %%
 
 
 img_name = display_list[1]

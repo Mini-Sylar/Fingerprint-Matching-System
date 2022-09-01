@@ -25,11 +25,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.canvas_DOG = None
         self.canvas_Gaussian = None
         self.query_image = None
-        self.des2 = None
-        self.kp2 = None
         self.train_image = None
-        self.kp1 = None
-        self.des1 = None
         self.setupUi(self)
 
         # Set Other Canvases Here
@@ -37,6 +33,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Create 2 SIFT OBJECTS HERE
         self.sift_query = SIFT()
         self.sift_train = SIFT()
+        self.sift_performance = cv2.SIFT_create()
         # Connect functions to UI here
         self.set_parameters_sift()
         self.connect_functions()
@@ -84,14 +81,11 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def load_image_train(self, image=None):
         """Load training image here, throws an error if image is invalid"""
         if not image:
-            image = QFileDialog.getOpenFileName(self, 'Open Query Image', '', text_filter)
+            image = QFileDialog.getOpenFileName(self, 'Open Training Image', '', text_filter)
         if image[0]:
             try:
                 #   Set label to path
                 self.Path_To_Train.setText(image[0])
-                #   Assign Image to sift_query
-                self.train_image = cv2.imread(image[0], 0)
-
                 #   Add info on status bar
                 self.statusbar.showMessage("Successfully loaded training image", msecs=5000)
                 self.check_if_path_filled()
@@ -112,10 +106,11 @@ class UiCode(Ui_MainWindow, QMainWindow):
         """
         self.canvas.figure.clear()
         self.statusbar.showMessage("Running research version of SIFT", msecs=10000)
+        # initialize training image here instead to since research version distorts image after processing
+        self.train_image = cv2.imread(self.Path_To_Train.text(), 0)
         MIN_MATCH_COUNT = 18
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
-
         # Initialize and use FLANN
         FLANN_INDEX_KDTREE = 1
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
@@ -166,20 +161,19 @@ class UiCode(Ui_MainWindow, QMainWindow):
             plt.title("Matches Obtained Research Version")
             plt.tight_layout()
             self.statusbar.showMessage("Matches found!", msecs=10000)
+            self.Match_Score.setText("%d" % (len(good)))
             #     Populate some labels
             # Get Match Score Here
-            if len(good) > 37:
+            if len(good) > 35:
                 self.Match_Score.setStyleSheet("color:green;")
-                self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:green;")
                 self.Verdict.setText("Fingerprints/Images Are A Good Match!")
             elif len(good) > 18:
                 self.Match_Score.setStyleSheet("color:orange;")
-                self.Match_Score.setText("%d" % (len(good)))
                 # Set Verdict Here
                 self.Verdict.setStyleSheet("color:orange;")
-                self.Verdict.setText("Fingerprints/Images Match With A Really Low Score!")
+                self.Verdict.setText("Fingerprints/Images Match With A Low Score!")
 
         else:
             # TODO: Add clearing of diagram once matches are too low
@@ -240,24 +234,22 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.canvas_DOG.draw()
         plt.tight_layout()
 
-    ###############################
-    # SIFT PERFORMANT VERSION #
-    ###############################
+###############################
+# SIFT PERFORMANT VERSION #
+###############################
 
     def run_sift_performant_version(self):
         self.canvas.figure.clear()
         start = datetime.now()
-        # Initiate SIFT detector
-        sift = cv2.SIFT_create()
-
         # find the keypoints and descriptors with SIFT
-        kp1, des1 = sift.detectAndCompute(self.query_image, None)
-        kp2, des2 = sift.detectAndCompute(self.train_image, None)
+        self.train_image = cv2.imread(self.Path_To_Train.text(), 0)
+        kp1, des1 = self.sift_performance.detectAndCompute(self.query_image, None)
+        kp2, des2 = self.sift_performance.detectAndCompute(self.train_image, None)
 
         # FLANN parameters
         FLANN_INDEX_KDTREE = 1
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-        search_params = dict(checks=50)  # or pass empty dictionary
+        search_params = dict(checks=37)  # or pass empty dictionary
         flann = cv2.FlannBasedMatcher(index_params, search_params)
         matches = flann.knnMatch(des1, des2, k=2)
 
@@ -269,6 +261,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             if m.distance < 0.6 * n.distance:
                 matchesMask[i] = [1, 0]
                 good.add(m)
+        print("Performant ",len(good))
         print(datetime.now() - start)
         draw_params = dict(matchColor=(0, 255, 255),
                            singlePointColor=(255, 0, 0),
@@ -283,17 +276,16 @@ class UiCode(Ui_MainWindow, QMainWindow):
         plt.tight_layout()
         # Extra Stuff
         self.statusbar.showMessage("Matches found!", msecs=10000)
+        self.Match_Score.setText("%d" % (len(good)))
         #     Populate some labels
         # Get Match Score Here
         if len(good) > 37:
-            self.Match_Score.setStyleSheet("color:green;")
-            self.Match_Score.setText("%d" % (len(good)))
+            self.Match_Score.setStyleSheet("color:blue;")
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:green;")
             self.Verdict.setText("Fingerprints/Images Are A Good Match!")
         elif len(good) > 15:
             self.Match_Score.setStyleSheet("color:orange;")
-            self.Match_Score.setText("%d" % (len(good)))
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:orange;")
             self.Verdict.setText("Fingerprints/Images Match With A Really Low Score!")
