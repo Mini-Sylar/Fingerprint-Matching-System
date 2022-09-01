@@ -86,8 +86,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
             try:
                 #   Set label to path
                 self.Path_To_Train.setText(image[0])
-                #   Assign Image to sift_query
-                self.train_image = cv2.imread(image[0], 0)
                 #   Add info on status bar
                 self.statusbar.showMessage("Successfully loaded training image", msecs=5000)
                 self.check_if_path_filled()
@@ -108,12 +106,11 @@ class UiCode(Ui_MainWindow, QMainWindow):
         """
         self.canvas.figure.clear()
         self.statusbar.showMessage("Running research version of SIFT", msecs=10000)
+        # initialize training image here instead to since research version distorts image after processing
+        self.train_image = cv2.imread(self.Path_To_Train.text(), 0)
         MIN_MATCH_COUNT = 18
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
-        print(self.query_image)
-        print(self.train_image)
-
         # Initialize and use FLANN
         FLANN_INDEX_KDTREE = 1
         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
@@ -126,7 +123,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
         for m, n in matches:
             if m.distance < 0.6 * n.distance:
                 good.add(m)
-        print("Research ", len(good))
         if len(good) > MIN_MATCH_COUNT:
             src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
             dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
@@ -246,8 +242,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.canvas.figure.clear()
         start = datetime.now()
         # find the keypoints and descriptors with SIFT
-        print(self.query_image)
-        print(self.train_image)
+        self.train_image = cv2.imread(self.Path_To_Train.text(), 0)
         kp1, des1 = self.sift_performance.detectAndCompute(self.query_image, None)
         kp2, des2 = self.sift_performance.detectAndCompute(self.train_image, None)
 
@@ -285,7 +280,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         #     Populate some labels
         # Get Match Score Here
         if len(good) > 37:
-            self.Match_Score.setStyleSheet("color:green;")
+            self.Match_Score.setStyleSheet("color:blue;")
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:green;")
             self.Verdict.setText("Fingerprints/Images Are A Good Match!")
