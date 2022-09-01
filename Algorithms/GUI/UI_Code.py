@@ -157,9 +157,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
             # create an axis and draw the images
             plt.figure(num=1)
             plt.imshow(newimg)
-            self.canvas.draw()
             plt.title("Matches Obtained Research Version")
             plt.tight_layout()
+            # Moved canvas draw to end of plot to make sure title shows everytime
+            self.canvas.draw()
             self.statusbar.showMessage("Matches found!", msecs=10000)
             self.Match_Score.setText("%d" % (len(good)))
             #     Populate some labels
@@ -271,9 +272,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # create an axis and draw the images
         plt.figure(num=1)
         plt.imshow(img3)
-        self.canvas.draw()
         plt.title("Matches Obtained Performant Version")
         plt.tight_layout()
+        # Move self.canvas.draw() to end to make sure title is rendered every single time
+        self.canvas.draw()
         # Extra Stuff
         self.statusbar.showMessage("Matches found!", msecs=10000)
         self.Match_Score.setText("%d" % (len(good)))
