@@ -6,6 +6,7 @@ import numpy as np
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtGui import QImageReader
 from matplotlib import pyplot as plt
+import matplotlib.figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -198,10 +199,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.Final_Image_Container.addWidget(self.toolbar)
         self.Final_Image_Container.addWidget(self.canvas)
         # Create Canvas For Gaussian Images
-        figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
-        self.canvas_Gaussian = FigureCanvas(figure_Gaussian)
-        toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
-        self.Show_Gaussian_Images.addWidget(toolbar_Gaussian)
+        self.figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
+        self.canvas_Gaussian = FigureCanvas(self.figure_Gaussian)
+        self.toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
+        self.Show_Gaussian_Images.addWidget(self.toolbar_Gaussian)
         self.Show_Gaussian_Images.addWidget(self.canvas_Gaussian)
         # Create Canvas And Add
         figure_DOG = plt.figure(num=3, figsize=(10, 10))
@@ -217,11 +218,17 @@ class UiCode(Ui_MainWindow, QMainWindow):
         Gaussian_images = self.sift_train.showGaussianBlurImages()
         # create a 10 by 10 grid here
         plt.figure(num=2, figsize=(10, 10))  # specifying the overall grid size
+        # Change font size to make sure everything fits in the canvas
+        plt.rcParams.update({'font.size': 8})
         for i in range(len(Gaussian_images)):
             plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
             plt.imshow(Gaussian_images[i], cmap='Greys_r')
-            self.canvas_Gaussian.draw()
         plt.tight_layout()
+        # Set Details in Label Here
+        self.G_Scale_Count.setText(str(len(Gaussian_images)))
+        self.G_Octaves.setText(str((len(Gaussian_images))//6))
+        self.canvas_Gaussian.draw()
+        self.canvas_Gaussian.updateGeometry()
 
     def show_DOG_SIFT_Research(self):
         self.canvas_DOG.figure.clear()
@@ -229,11 +236,13 @@ class UiCode(Ui_MainWindow, QMainWindow):
         doG_images = self.sift_train.showDOGImages()
         # # create a 10 by 10 grid here
         plt.figure(num=3, figsize=(10, 10))  # specifying the overall grid size
+        plt.rcParams.update({'font.size': 8})
+        plt.title("Gaussian Scale Space and Extrema")
         for i in range(len(doG_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
             plt.imshow(doG_images[i], cmap='Greys_r')
-            self.canvas_DOG.draw()
         plt.tight_layout()
+        self.canvas_DOG.draw()
 
 ###############################
 # SIFT PERFORMANT VERSION #

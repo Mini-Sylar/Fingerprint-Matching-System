@@ -113,12 +113,25 @@
          </layout>
         </widget>
         <widget class="QWidget" name="Gaussian">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>500</height>
+          </size>
+         </property>
          <attribute name="title">
           <string>Gaussian Scale Space</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_9">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
           <item>
-           <layout class="QVBoxLayout" name="Show_Gaussian_Images"/>
+           <layout class="QVBoxLayout" name="Show_Gaussian_Images">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetFixedSize</enum>
+            </property>
+           </layout>
           </item>
           <item>
            <layout class="QFormLayout" name="formLayout_4">
@@ -129,17 +142,17 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Octaves</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QLabel" name="G_Scale_Count">
               <property name="text">
                <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Octaves</string>
               </property>
              </widget>
             </item>
@@ -159,6 +172,9 @@
           <string>Difference of Gaussian</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
           <item>
            <layout class="QVBoxLayout" name="Show_DOG_Image"/>
           </item>
@@ -201,7 +217,7 @@
       <item row="0" column="1">
        <widget class="QTabWidget" name="Minutiae">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Minutiae_Matches">
          <attribute name="title">
