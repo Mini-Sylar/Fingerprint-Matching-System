@@ -12,7 +12,6 @@ from SIFT import SIFT_OBJ
 def perform_sift_research(query, train):
     # start = datetime.now()
     MIN_MATCH_COUNT = 10
-    bestscore = 0
 
     img1 = cv2.imread(query, 0)  # queryImage
     img2 = cv2.imread(train, 0)  # trainImage
