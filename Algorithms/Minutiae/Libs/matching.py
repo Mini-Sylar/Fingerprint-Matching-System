@@ -1,7 +1,7 @@
 # Minutiae matching for computing similarity score between images. 
 import math
 import numpy as np
-from libs.basics import extract_angle, euclidian_distance, quadrant
+from Algorithms.Minutiae.Libs.basics import extract_angle, euclidian_distance, quadrant
 
 
 class Edge:
