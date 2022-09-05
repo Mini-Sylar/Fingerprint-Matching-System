@@ -7,13 +7,14 @@ import scipy
 from scipy import ndimage, signal
 
 import warnings
+
 warnings.simplefilter("ignore")
 
 import cv2
 cv2.ocl.setUseOpenCL(False)
 
 sys.path.append("Algorithms/Minutiae/Libs")
-from Libs.processing import thin_image, clean_points
+from Algorithms.Minutiae.Libs.processing import thin_image, clean_points
 
 
 def enhance_image(image: np.array, block_orientation: int = 16, threshold: float = 0.1,
@@ -52,6 +53,8 @@ def enhance_image(image: np.array, block_orientation: int = 16, threshold: float
     image_filtered = ridge_filter(img_normalised, img_orientation, med * mask, .65, .65)
 
     image_enhanced = (image_filtered < -3)
+
+    # img_gb = process(binarise(img), build_filters())
 
     if skeletonise:
         # Applies image thinning and sets background to white.
@@ -182,13 +185,15 @@ def ridge_filter(im, orient, freq, kx, ky):
 
     unfreq = np.unique(non_zero_elems_in_freq)
 
+
     # Generate filters corresponding to these distinct frequencies and
     # orientations in 'angleInc' increments.
 
     sigmax = 1 / unfreq[0] * kx
     sigmay = 1 / unfreq[0] * ky
 
-    sze = np.round(3 * np.max([sigmax, sigmay]))
+    sze = int(np.round(3 * np.max([sigmax, sigmay])))
+    print(sze)
 
     x, y = np.meshgrid(np.linspace(-sze, sze, (2 * sze + 1)), np.linspace(-sze, sze, (2 * sze + 1)))
 
