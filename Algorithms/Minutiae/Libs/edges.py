@@ -1,8 +1,8 @@
 import numpy as np
 
-from libs.basics import display_image
-from libs.enhancing import enhance_image
-from libs.processing import thin_image, swap
+from Algorithms.Minutiae.Libs.basics import display_image
+from Algorithms.Minutiae.Libs.enhancing import enhance_image
+from Algorithms.Minutiae.Libs.processing import thin_image, swap
 
 import matplotlib
 import matplotlib.pyplot as plt

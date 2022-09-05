@@ -193,7 +193,6 @@ def ridge_filter(im, orient, freq, kx, ky):
     sigmay = 1 / unfreq[0] * ky
 
     sze = int(np.round(3 * np.max([sigmax, sigmay])))
-    print(sze)
 
     x, y = np.meshgrid(np.linspace(-sze, sze, (2 * sze + 1)), np.linspace(-sze, sze, (2 * sze + 1)))
 

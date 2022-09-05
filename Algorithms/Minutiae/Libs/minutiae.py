@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-from libs.basics import display_image, extract_angle, euclidian_distance
+from Algorithms.Minutiae.Libs.basics import display_image, extract_angle, euclidian_distance
 
 
 def extract_minutiae(image: np.array):
@@ -68,7 +68,7 @@ def extract_minutiae(image: np.array):
 
                 # Add bifurcation coordinates
                 bifurcations.append((i, j))
-
+    print(f"terminations {len(terminations)}, bifurcations {len(bifurcations)}")
     return terminations, bifurcations
 
 
