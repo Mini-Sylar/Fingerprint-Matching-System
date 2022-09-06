@@ -9,32 +9,26 @@ from Algorithms.Minutiae.Libs.minutiae import process_minutiae, generate_tuple_p
 class Minutiae:
     def detectAndComputeMinutiae(self, image_path):
         #         Load images
-        image_raw = load_image(image_path, True)
+        image_raw = load_image(image_path, gray=True)
         enhanced_image = enhance_image(image_raw, skeletonise=True)
         # # display_image(enhanced_image,title="Enhanced Image")
         minutiae = process_minutiae(enhanced_image)
-        terminations,bifurcation = minutiae
-        print(terminations)
-        print(bifurcation)
-
-        terminations_profile  = generate_tuple_profile(terminations)
+        terminations, bifurcation = minutiae
+        # Generate Tuple Profile Here
+        terminations_profile = generate_tuple_profile(terminations)
         minutiae_profile = generate_tuple_profile(bifurcation)
-
-        print(terminations_profile)
-        # profile = generate_tuple_profile(minutiae)
+        # Generate Axis Here
         fig, ax = plt.subplots(1, 1)
-
-
+        # Show images on Axis
         for y, x in terminations_profile.keys():
             termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
             ax.add_artist(termination)
             plt.imshow(enhanced_image)
         for y, x in minutiae_profile.keys():
-            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='green', fill=False)
             ax.add_artist(bifurcation)
             plt.imshow(enhanced_image)
-        plt.show()
-
+        display_image(enhanced_image,title="Terminations & Bifurcations")
 
 
 fm = Minutiae()
