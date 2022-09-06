@@ -310,6 +310,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.Verdict.setStyleSheet("color:red;")
             self.Verdict.setText("Fingerprints/Images Are Not A Match!")
 
+###############################
+# Minutiae Algorithm
+###############################
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
