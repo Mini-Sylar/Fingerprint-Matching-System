@@ -26,24 +26,25 @@ img_enhanced_test = enhance_image(img_test)
 display_image(img_enhanced_train,title="enhanced")
 
 
-# # Moving on the minutiae extraction part
+# # # Moving on the minutiae extraction part
 # minutiae_base = process_minutiae(img_enhanced_train)
 # plot_minutiae(img_enhanced_train, minutiae_base, size=8)
 #
 # minutiae_test = process_minutiae(img_enhanced_test)
 # plot_minutiae(img_enhanced_test, minutiae_test, size=8)
-#
-#
-# # Perform Corner Detection Here
-# img1 = cv2.imread(path_train, 0)
-# img2 = cv2.imread(path_test, 0)
-#
-# edges1, desc1 = edge_processing(img1, threshold=155)
-# edges2, desc2 = edge_processing(img2, threshold=155)
-#
-# plot_edges(img1, img2, edges1, edges2)
-#
-# # Plot connective Matches on the corners
+
+
+# Perform Corner Detection Here
+img1 = cv2.imread(path_train, 0)
+img2 = cv2.imread(path_test, 0)
+
+edges1, desc1 = edge_processing(img1, threshold=155)
+edges2, desc2 = edge_processing(img2, threshold=155)
+print(edges1)
+
+plot_edges(img1, img2, edges1, edges2)
+
+# Plot connective Matches on the corners
 # #Get number of bigurcations and terminations here
 # matches = match_edge_descriptors(desc1, desc2)
 # plot_matches(img1, img2, edges1, edges2, matches)
