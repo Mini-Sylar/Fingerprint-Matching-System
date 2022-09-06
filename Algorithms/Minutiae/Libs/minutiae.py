@@ -160,8 +160,9 @@ def process_minutiae(image: np.array):
     # Post-processing border minutiae removal.
     terminations = clean_minutiae(image, terminations)
     bifurcations = clean_minutiae(image, bifurcations)
-
-    return terminations + bifurcations
+    # test here
+    return terminations, bifurcations
+    # return terminations + bifurcations
 
 
 def generate_tuple_profile(minutiae: list) -> dict:
@@ -262,7 +263,6 @@ def plot_minutiae(image: np.array, terminations: list = None, bifurcations: list
         size          (int): Size of the displayed figure. Square figure with side = size.
 
     """
-
     if bifurcations is None and terminations is None:
         raise Exception("INFO: No 'terminations' or 'bifurcations' parameter given. Nothing to plot.")
     else:

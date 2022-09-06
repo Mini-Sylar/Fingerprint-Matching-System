@@ -13,13 +13,25 @@ class Minutiae:
         enhanced_image = enhance_image(image_raw, skeletonise=True)
         # # display_image(enhanced_image,title="Enhanced Image")
         minutiae = process_minutiae(enhanced_image)
-        profile = generate_tuple_profile(minutiae)
+        terminations,bifurcation = minutiae
+        print(terminations)
+        print(bifurcation)
 
+        terminations_profile  = generate_tuple_profile(terminations)
+        minutiae_profile = generate_tuple_profile(bifurcation)
+
+        print(terminations_profile)
+        # profile = generate_tuple_profile(minutiae)
         fig, ax = plt.subplots(1, 1)
 
-        for y, x in profile.keys():
-            termination = plt.Circle((x, y), radius=2, linewidth=2, color='red', fill=False)
+
+        for y, x in terminations_profile.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
             ax.add_artist(termination)
+            plt.imshow(enhanced_image)
+        for y, x in minutiae_profile.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax.add_artist(bifurcation)
             plt.imshow(enhanced_image)
         plt.show()
 
@@ -27,5 +39,5 @@ class Minutiae:
 
 fm = Minutiae()
 
-img_test = "C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\1__M_Left_index_finger.BMP"
+img_test = "C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\101_1.tif"
 fm.detectAndComputeMinutiae(img_test)
