@@ -118,7 +118,7 @@ def match_edge_descriptors(descriptor_base: np.array, descriptor_test: np.array,
 def sift_match(image_base: np.array, image_test: np.array):
 
     # Initiate SIFT detector
-    sift = cv2.xfeatures2d.SIFT_create()
+    sift = cv2.SIFT_create()
 
     # find the keypoints and descriptors with SIFT
     kp1, des1 = sift.detectAndCompute(image_base, None)
