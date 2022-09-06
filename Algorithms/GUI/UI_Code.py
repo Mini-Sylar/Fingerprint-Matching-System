@@ -3,15 +3,21 @@ from datetime import datetime
 
 import cv2
 import numpy as np
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtGui import QImageReader
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
-import matplotlib.figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.patches import ConnectionPatch
 
 from AlgorithmExamination import Ui_MainWindow
+from Algorithms.Minutiae.Libs.basics import load_image
+from Algorithms.Minutiae.Libs.matching import match_tuples
+from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
+# Import SIFT
 from Algorithms.SIFT.SIFT_OBJ import SIFT
+# Import Minutiae
+from Algorithms.Minutiae.Minutiae_OBJ import Minutiae
 
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
@@ -47,6 +53,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
         # Run SIFT PERFORMANT VERSION
         self.run_sift_performance.clicked.connect(self.run_sift_performant_version)
+        # Run minutiae
+        self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
     def check_if_path_filled(self):
         default_text_train = "Path to training image will show here"
@@ -207,10 +215,16 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Create Canvas And Add
         figure_DOG = plt.figure(num=3, figsize=(10, 10))
         self.canvas_DOG = FigureCanvas(figure_DOG)
-        # canvas_DOG.setParent(canvas_DOG)
         toolbar_DOG = NavigationToolbar(self.canvas_DOG, self)
         self.Show_DOG_Image.addWidget(toolbar_DOG)
         self.Show_DOG_Image.addWidget(self.canvas_DOG)
+    #     Creating Canvas For Minuiae
+        self.figure_Minutiae_Match = plt.figure(num=4)
+        self.canvas_minutiae_match = FigureCanvas(self.figure_Minutiae_Match)
+        toolbar_minutiae_match = NavigationToolbar(self.canvas_minutiae_match,self)
+        self.min_matches_layout.addWidget(toolbar_minutiae_match)
+        self.min_matches_layout.addWidget(self.canvas_minutiae_match)
+
 
     def show_Gaussian_SIFT_Research(self):
         self.canvas_Gaussian.figure.clear()
@@ -226,7 +240,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         plt.tight_layout()
         # Set Details in Label Here
         self.G_Scale_Count.setText(str(len(Gaussian_images)))
-        self.G_Octaves.setText(str((len(Gaussian_images))//6))
+        self.G_Octaves.setText(str((len(Gaussian_images)) // 6))
         self.canvas_Gaussian.draw()
         self.canvas_Gaussian.updateGeometry()
 
@@ -244,9 +258,9 @@ class UiCode(Ui_MainWindow, QMainWindow):
         plt.tight_layout()
         self.canvas_DOG.draw()
 
-###############################
-# SIFT PERFORMANT VERSION #
-###############################
+    ###############################
+    # SIFT PERFORMANT VERSION #
+    ###############################
 
     def run_sift_performant_version(self):
         self.canvas.figure.clear()
@@ -271,7 +285,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             if m.distance < 0.6 * n.distance:
                 matchesMask[i] = [1, 0]
                 good.add(m)
-        print("Performant ",len(good))
+        print("Performant ", len(good))
         print(datetime.now() - start)
         draw_params = dict(matchColor=(0, 255, 255),
                            singlePointColor=(255, 0, 0),
@@ -310,9 +324,78 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.Verdict.setStyleSheet("color:red;")
             self.Verdict.setText("Fingerprints/Images Are Not A Match!")
 
-###############################
-# Minutiae Algorithm
-###############################
+    ###############################
+    # Minutiae Algorithm
+    ###############################
+    def run_minutiae_algorithm(self):
+        self.canvas_minutiae_match.figure.clear()
+        # Create 2 Minutiae Objects Here
+        self.minutiae = Minutiae()
+        coor_termination1, coor_bifurcation1 = self.minutiae.detectAndComputeMinutiae(self.Path_To_Train.text())
+        coor_termination2, coor_bifurcation2 = self.minutiae.detectAndComputeMinutiae(self.Path_To_Query.text())
+        # Image Profiles
+        img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
+        img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
+
+        # Image 2 Profiles
+        img_profile2_term = generate_tuple_profile(coor_termination2)
+        img_profile2_bif = generate_tuple_profile(coor_bifurcation2)
+
+        # Load Images here (should already be loaded when tranformed into class)
+        # Plot Terminations as red and bifurcations as blue
+        train_image = load_image(self.Path_To_Train.text())
+        query_image = load_image(self.Path_To_Query.text())
+        # Plot Termination and Bifurcation Circle
+        ax = self.figure_Minutiae_Match.subplots(1, 2)
+        # Images Here
+        for y, x in img_profile1_term.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
+            ax[0].add_artist(termination)
+            ax[0].imshow(train_image)
+
+        for y, x in img_profile1_bif.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax[0].add_artist(bifurcation)
+            ax[0].imshow(train_image)
+
+        # FOr Query Image
+        for y, x in img_profile2_term.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
+            ax[1].add_artist(termination)
+            ax[1].imshow(query_image)
+
+        for y, x in img_profile1_bif.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax[1].add_artist(bifurcation)
+            ax[1].imshow(query_image)
+
+        # # Common points Termination
+        common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
+                                                                                        img_profile2_term)
+        common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
+                                                                                        img_profile2_bif)
+
+        # Draw Lines to Match points, points with "X" means there was no match on the other image
+        for x, y in common_points_query_termination:
+            # Reverse points since ConnectPatch is flipped
+            xy = (y, x)
+            con = ConnectionPatch(xyA=xy, xyB=xy, coordsA="data", coordsB="data",
+                                  axesA=ax[0], axesB=ax[1], color="red")
+            ax[1].add_artist(con)
+
+            ax[0].plot(x, y, 'rx', markersize=5)
+            ax[1].plot(x, y, 'rx', markersize=5)
+
+        for x, y in common_points_query_bifurcation:
+            # Reverse points since ConnectPatch is flipped
+            xy = (y, x)
+            con = ConnectionPatch(xyA=xy, xyB=xy, coordsA="data", coordsB="data",
+                                  axesA=ax[0], axesB=ax[1], color="blue")
+            ax[1].add_artist(con)
+            ax[0].plot(x, y, 'bx', markersize=5)
+            ax[1].plot(x, y, 'bx', markersize=5)
+
+        self.canvas_minutiae_match.draw()
 
 
 if __name__ == "__main__":
