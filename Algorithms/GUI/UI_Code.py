@@ -9,15 +9,15 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.patches import ConnectionPatch
+import matplotlib.patches as mpatches
 
 from AlgorithmExamination import Ui_MainWindow
-from Algorithms.Minutiae.Libs.basics import load_image
 from Algorithms.Minutiae.Libs.matching import match_tuples
 from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
+# Import Minutiae
+from Algorithms.Minutiae.Minutiae_OBJ import *
 # Import SIFT
 from Algorithms.SIFT.SIFT_OBJ import SIFT
-# Import Minutiae
-from Algorithms.Minutiae.Minutiae_OBJ import detectAndComputeMinutiae
 
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
@@ -225,19 +225,27 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.min_matches_layout.addWidget(toolbar_minutiae_match)
         self.min_matches_layout.addWidget(self.canvas_minutiae_match)
         # Creating Canvas for Equalized Image
-        figure_equalized, canvas_equalized = self.initialize_canvas(5, 10, 10)
-        self.enhance_layout.addWidget(canvas_equalized)
-        self.enhance_layout.addWidget(figure_equalized)
+        self.figure_equalized, self.canvas_equalized, self.toolbar_equalized = self.initialize_canvas(5)
+        self.norm_layout.addWidget(self.toolbar_equalized)
+        self.norm_layout.addWidget(self.canvas_equalized)
         # Creating Canvas for Binarized Image
-        figure_binarized,canvas_binarized = self.initialize_canvas(6,10,10)
-        self.bin_layout.addWidget(canvas_binarized)
-        self.bin_layout.addWidget(figure_binarized)
+        self.figure_binarized, self.canvas_binarized, self.toolbar_binarized = self.initialize_canvas(6)
+        self.bin_layout.addWidget(self.toolbar_binarized)
+        self.bin_layout.addWidget(self.canvas_binarized)
+        # Creating Canvas for Thinned Image
+        self.figure_thinned, self.canvas_thinned, self.toolbar_thinned = self.initialize_canvas(7)
+        self.thin_layout.addWidget(self.toolbar_thinned)
+        self.thin_layout.addWidget(self.canvas_thinned)
+        # Creating Canvas for Enhanced Images
+        self.figure_enhanced, self.canvas_enhanced, self.toolbar_enhanced = self.initialize_canvas(8)
+        self.enhance_layout.addWidget(self.toolbar_enhanced)
+        self.enhance_layout.addWidget(self.canvas_enhanced)
 
-    def initialize_canvas(self, figure_num, row: int, column: int):
+    def initialize_canvas(self, figure_num, row: int = 10, column: int = 10):
         figure = plt.figure(num=figure_num, figsize=(row, column))
         canvas = FigureCanvas(figure)
         toolbar = NavigationToolbar(canvas, self)
-        return canvas, toolbar
+        return figure, canvas, toolbar
 
     def show_Gaussian_SIFT_Research(self):
         self.canvas_Gaussian.figure.clear()
@@ -350,6 +358,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Image Profiles
         img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
         img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
+        self.termin_disp = img_profile1_term
+        self.bif_disp = img_profile1_bif
 
         # Image 2 Profiles
         img_profile2_term = generate_tuple_profile(coor_termination2)
@@ -413,9 +423,53 @@ class UiCode(Ui_MainWindow, QMainWindow):
             ax[1].plot(x, y, 'bx', markersize=5)
 
         self.canvas_minutiae_match.draw()
+        self.generateExtraMinutiae()
 
+    #         set label texts here
+    def setMinutiaeLabelText(self):
+        ...
 
-#         set label texts here
+    def generateExtraMinutiae(self):
+        train_image = load_image(self.Path_To_Train.text(), gray=True)
+        # Equalized Image
+        equalized_image = histogram_equalisation(train_image)
+        ax_equalized = self.figure_equalized.subplots(1, 1)
+        ax_equalized.imshow(np.hstack((train_image, equalized_image)), cmap='gray')
+
+        # Binarized Image
+        binarized_image = binarise(equalized_image)
+        ax_binarized = self.figure_binarized.subplots(1, 1)
+        ax_binarized.imshow(np.hstack((train_image, binarized_image)), cmap='gray')
+
+        # Thinned Image
+        thinned_image = thin_image(train_image)
+        ax_thinned = self.figure_thinned.subplots(1, 1)
+        ax_thinned.imshow(thinned_image, cmap='gray')
+
+        # Enhanced Image
+        enhanced_image = enhance_image(train_image, skeletonise=True)
+        ax_enhanced = self.figure_enhanced.subplots(1, 1)
+        # FOr Query Image
+        for y, x in self.termin_disp.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
+            ax_enhanced.add_artist(termination)
+            ax_enhanced.imshow(enhanced_image)
+        for y, x in self.bif_disp.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax_enhanced.add_artist(bifurcation)
+            ax_enhanced.imshow(enhanced_image)
+        # Create Legend Here
+        patches = [mpatches.Patch(color="red", label="Terminations"),
+                   mpatches.Patch(color="blue", label="Bifurcations")]
+        # put those patched as legend-handles into the legend
+        ax_enhanced.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        ax_enhanced.imshow(enhanced_image, cmap="gray")
+
+        self.canvas_equalized.draw()
+        self.canvas_binarized.draw()
+        self.canvas_thinned.draw()
+
+        # todo: Clean up and put into functions
 
 
 if __name__ == "__main__":

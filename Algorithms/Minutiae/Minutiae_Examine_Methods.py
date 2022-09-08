@@ -33,7 +33,7 @@ from Libs.processing import *
 
 # Process images here
 img  = cv2.imread("C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching "
-                        "Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\100__M_Left_index_finger.BMP",cv2.IMREAD_GRAYSCALE)
+                        "Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\1__M_Left_index_finger.BMP",cv2.IMREAD_GRAYSCALE)
 
 
 

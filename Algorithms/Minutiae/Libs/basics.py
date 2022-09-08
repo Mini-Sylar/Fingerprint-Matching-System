@@ -149,7 +149,31 @@ def display_image(image: np.array, title: str = None, cmap: str = None, figsize:
     plt.grid(False)
     plt.title(title)
     plt.show()
+def display_image(image: np.array, title: str = None, cmap: str = None, figsize: tuple = None):
+    """
+    Plots an image using matplotlib pyplot imshow.
 
+    Args:
+        image (nd.array): Image that should be visualised.
+        title      (str): Displayed graph title.
+        cmap       (str): Cmap type.
+        figsize  (tuple): Size of the displayed figure.
+
+    """
+
+    if figsize:
+        plt.figure(figsize=figsize)
+
+    plt.imshow(image, cmap=cmap)
+
+    if (len(image.shape) == 2) or (image.shape[-1] == 1):
+        plt.gray()
+
+    plt.xticks([])
+    plt.yticks([])
+    plt.grid(False)
+    plt.title(title)
+    plt.show()
 
 def display_dataset(dataset, root_path: str = '../data', users=10, samples=8, size=2):
     """
