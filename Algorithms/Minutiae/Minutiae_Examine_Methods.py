@@ -33,11 +33,11 @@ from Libs.processing import *
 
 # Process images here
 img  = cv2.imread("C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching "
-                        "Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\1__M_Left_index_finger.BMP",0)
+                        "Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\100__M_Left_index_finger.BMP",cv2.IMREAD_GRAYSCALE)
 
-print(img)
 
-print(f"base image shape: {img.shape}")
+
+display_image(enhance_image(img))
 
 """
     the first thing to do here will be to equalize the image
@@ -47,6 +47,9 @@ print(f"base image shape: {img.shape}")
 equalized_image = histogram_equalisation(img)
 # Display equalized image vs original image (SHOW IN WINDOW)
 display_image(np.hstack((img,equalized_image)),title="Equalized Image Comparison")
+
+enhanced_image  = enhance_image(img)
+display_image(enhanced_image,title="enhanced")
 
 # # Visualize Histogram Equalization Graph Here
 # color_range = 255
@@ -167,7 +170,7 @@ display_image(img_gb)
 
 # Image enhancement SIDE
 # Revert gray colour levels. Match scale with the raw image for comparison.
-path_train = 'C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\1__M_Left_index_finger.BMP'
+path_train = 'C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Real\\100__M_Left_index_finger.bmp'
 path_test = 'C:\\Users\\Andy\\OneDrive\\Desktop\\FingerPrint Matching Project\\Fingerprint-Matching-System\\Algorithms\\Images\\Altered\\Easy\\1__M_Left_index_finger_CR.BMP'
 
 # Image loading

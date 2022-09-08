@@ -17,7 +17,7 @@ from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
 # Import SIFT
 from Algorithms.SIFT.SIFT_OBJ import SIFT
 # Import Minutiae
-from Algorithms.Minutiae.Minutiae_OBJ import Minutiae
+from Algorithms.Minutiae.Minutiae_OBJ import detectAndComputeMinutiae
 
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
@@ -218,13 +218,26 @@ class UiCode(Ui_MainWindow, QMainWindow):
         toolbar_DOG = NavigationToolbar(self.canvas_DOG, self)
         self.Show_DOG_Image.addWidget(toolbar_DOG)
         self.Show_DOG_Image.addWidget(self.canvas_DOG)
-    #     Creating Canvas For Minuiae
-        self.figure_Minutiae_Match = plt.figure(num=4)
+        #     Creating Canvas For Minutiae
+        self.figure_Minutiae_Match = plt.figure(num=4, figsize=(10, 10))
         self.canvas_minutiae_match = FigureCanvas(self.figure_Minutiae_Match)
-        toolbar_minutiae_match = NavigationToolbar(self.canvas_minutiae_match,self)
+        toolbar_minutiae_match = NavigationToolbar(self.canvas_minutiae_match, self)
         self.min_matches_layout.addWidget(toolbar_minutiae_match)
         self.min_matches_layout.addWidget(self.canvas_minutiae_match)
+        # Creating Canvas for Equalized Image
+        figure_equalized, canvas_equalized = self.initialize_canvas(5, 10, 10)
+        self.enhance_layout.addWidget(canvas_equalized)
+        self.enhance_layout.addWidget(figure_equalized)
+        # Creating Canvas for Binarized Image
+        figure_binarized,canvas_binarized = self.initialize_canvas(6,10,10)
+        self.bin_layout.addWidget(canvas_binarized)
+        self.bin_layout.addWidget(figure_binarized)
 
+    def initialize_canvas(self, figure_num, row: int, column: int):
+        figure = plt.figure(num=figure_num, figsize=(row, column))
+        canvas = FigureCanvas(figure)
+        toolbar = NavigationToolbar(canvas, self)
+        return canvas, toolbar
 
     def show_Gaussian_SIFT_Research(self):
         self.canvas_Gaussian.figure.clear()
@@ -330,9 +343,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def run_minutiae_algorithm(self):
         self.canvas_minutiae_match.figure.clear()
         # Create 2 Minutiae Objects Here
-        self.minutiae = Minutiae()
-        coor_termination1, coor_bifurcation1 = self.minutiae.detectAndComputeMinutiae(self.Path_To_Train.text())
-        coor_termination2, coor_bifurcation2 = self.minutiae.detectAndComputeMinutiae(self.Path_To_Query.text())
+        # self.minutiae = Minutiae()
+        coor_termination1, coor_bifurcation1 = detectAndComputeMinutiae(self.Path_To_Train.text())
+        print(len(coor_termination1))
+        coor_termination2, coor_bifurcation2 = detectAndComputeMinutiae(self.Path_To_Query.text())
         # Image Profiles
         img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
         img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
@@ -347,6 +361,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         query_image = load_image(self.Path_To_Query.text())
         # Plot Termination and Bifurcation Circle
         ax = self.figure_Minutiae_Match.subplots(1, 2)
+        self.figure_Minutiae_Match.suptitle('Matches Obtained Minutiae', fontsize=12)
         # Images Here
         for y, x in img_profile1_term.keys():
             termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
@@ -375,6 +390,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
                                                                                         img_profile2_bif)
 
+        print(len(common_points_train_termination))
+
         # Draw Lines to Match points, points with "X" means there was no match on the other image
         for x, y in common_points_query_termination:
             # Reverse points since ConnectPatch is flipped
@@ -396,6 +413,9 @@ class UiCode(Ui_MainWindow, QMainWindow):
             ax[1].plot(x, y, 'bx', markersize=5)
 
         self.canvas_minutiae_match.draw()
+
+
+#         set label texts here
 
 
 if __name__ == "__main__":
