@@ -24,15 +24,3 @@ def detectAndComputeMinutiae(image_path):
 
 def showEqualizedImage(image):
     display_image(histogram_equalisation(image))
-
-
-def showBinarisedImage(image):
-    display_image(binarise(image))
-
-
-def showThinnedImage(image):
-    display_image(thin_image(image))
-
-
-def showEnhancedImage(image):
-    display_image((enhance_image(image)))
