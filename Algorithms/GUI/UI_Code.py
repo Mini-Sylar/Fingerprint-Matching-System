@@ -447,7 +447,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         thinned_image = thin_image(train_image)
         ax_thinned = self.figure_thinned.subplots(1, 1)
         ax_thinned.imshow(thinned_image, cmap='gray')
-        self.figure_binarized.suptitle('Thinned Image', fontsize=12)
+        self.figure_thinned.suptitle('Thinned Image', fontsize=12)
 
         # Enhanced Image
         enhanced_image = enhance_image(train_image, skeletonise=True)
