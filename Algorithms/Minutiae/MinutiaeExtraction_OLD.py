@@ -28,10 +28,10 @@ image1 = imageio.v3.imread(display_list[0])
 image2 = imageio.v3.imread(display_list[1])
 image3 = imageio.v3.imread(display_list[2])
 
-fig, axes = plt.subplots(1, 3, figsize=(16, 16))
-axes[0].imshow(image1)
-axes[1].imshow(image2)
-axes[2].imshow(image3)
+# fig, axes = plt.subplots(1, 3, figsize=(16, 16))
+# axes[0].imshow(image1)
+# axes[1].imshow(image2)
+# axes[2].imshow(image3)
 
 
 # Image Transforms
@@ -46,27 +46,22 @@ axes[2].imshow(image3)
 gauss_blur = cv2.GaussianBlur(image1, (1, 1), 0)
 median_blur = cv2.medianBlur(image1, 1)
 
-fig, axes = plt.subplots(1, 3, figsize=(16, 16))
-axes[0].set_title("original Image")
-axes[0].imshow(image1)
-axes[1].set_title("Gaussian Blurred Image")
-axes[1].imshow(gauss_blur)
-axes[2].set_title("Median Blurred Image")
-axes[2].imshow(median_blur)
+# fig, axes = plt.subplots(1, 3, figsize=(16, 16))
+# axes[0].set_title("original Image")
+# axes[0].imshow(image1)
+# axes[1].set_title("Gaussian Blurred Image")
+# axes[1].imshow(gauss_blur)
+# axes[2].set_title("Median Blurred Image")
+# axes[2].imshow(median_blur)
+#
+# # #### Histograms
+# fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+# axes[0].hist(image1.ravel(), bins=256, color="r")
+# axes[1].hist(image2.ravel(), bins=256)
+# axes[2].hist(image3.ravel(), bins=256, color="g")
 
-# %% [markdown]
-# #### Histograms
-
-# %%
-fig, axes = plt.subplots(1, 3, figsize=(18, 5))
-axes[0].hist(image1.ravel(), bins=256, color="r")
-axes[1].hist(image2.ravel(), bins=256)
-axes[2].hist(image3.ravel(), bins=256, color="g")
-
-# %% [markdown]
 # #### Data seems to be almost binary - implementing mean and adaptive thresholding
 
-# %%
 # mean thresholding - gives bad results
 THRESHOLD1 = image1.mean()
 THRESHOLD2 = image2.mean()
@@ -76,12 +71,11 @@ image1 = np.array(image1 > THRESHOLD1).astype(int) * 255
 image2 = np.array(image2 > THRESHOLD2).astype(int) * 254
 image3 = np.array(image3 > THRESHOLD3).astype(int) * 254
 
-fig, axes = plt.subplots(1, 3, figsize=(16, 16))
-axes[0].imshow(image1)
-axes[1].imshow(image2)
-axes[2].imshow(image3)
+# fig, axes = plt.subplots(1, 3, figsize=(16, 16))
+# axes[0].imshow(image1)
+# axes[1].imshow(image2)
+# axes[2].imshow(image3)
 
-# %%
 # Adaptive thresholding from OpenCV library - better than Mean Thresholding
 
 img1 = cv2.imread(display_list[0], 0)
@@ -93,13 +87,13 @@ ret1, th1 = cv2.threshold(img1, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 ret2, th2 = cv2.threshold(img2, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 ret3, th3 = cv2.threshold(img3, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 
-fig, axes = plt.subplots(1, 3, figsize=(12, 12))
-axes[0].set_title("Otsu's thresholding - Image 1")
-axes[0].imshow(th2)
-axes[1].set_title("Otsu's thresholding - Image 2")
-axes[1].imshow(th2)
-axes[2].set_title("Otsu's thresholding - Image 3")
-axes[2].imshow(th2)
+# fig, axes = plt.subplots(1, 3, figsize=(12, 12))
+# axes[0].set_title("Otsu's thresholding - Image 1")
+# axes[0].imshow(th2)
+# axes[1].set_title("Otsu's thresholding - Image 2")
+# axes[1].imshow(th2)
+# axes[2].set_title("Otsu's thresholding - Image 3")
+# axes[2].imshow(th2)
 
 # ### Edge detection:
 
@@ -138,13 +132,13 @@ convolved_img2 = convolve(convolved_img2, horizontal_sobel_filter)
 convolved_img3 = convolve(gray_img, vertical_prewitt_filter)
 convolved_img3 = convolve(gray_img, horizontal_prewitt_filter)
 
-fig, axes = plt.subplots(1, 3, figsize=(12, 12))
-axes[0].set_title("Robert")
-axes[0].imshow(convolved_img1)
-axes[1].set_title("Sobel")
-axes[1].imshow(convolved_img2)
-axes[2].set_title("Prewitt")
-axes[2].imshow(convolved_img3)
+# fig, axes = plt.subplots(1, 3, figsize=(12, 12))
+# axes[0].set_title("Robert")
+# axes[0].imshow(convolved_img1)
+# axes[1].set_title("Sobel")
+# axes[1].imshow(convolved_img2)
+# axes[2].set_title("Prewitt")
+# axes[2].imshow(convolved_img3)
 
 # ### Ridge Detection
 
@@ -301,13 +295,15 @@ def ShowResults(skel, TermLabel, BifLabel):
 img_name = display_list[1]
 img = cv2.imread(img_name, 0)
 img = np.array(img > THRESHOLD1).astype(int)
-skel = skimage.morphology.skeletonize(img)
-skel = np.uint8(skel)*255
+binary_img = skimage.morphology.skeletonize(img)
+binary_img = np.uint8(binary_img) * 255
 mask = img*255
 
-(minutiaeTerm, minutiaeBif) = getTerminationBifurcation(skel, mask)
+(minutiaeTerm, minutiaeBif) = getTerminationBifurcation(binary_img, mask)
 FeaturesTerm, FeaturesBif = extractMinutiaeFeatures(
-    skel, minutiaeTerm, minutiaeBif)
+    binary_img, minutiaeTerm, minutiaeBif)
+print("Features Termination")
+print(len(FeaturesTerm))
 BifLabel = skimage.measure.label(minutiaeBif, connectivity=1)
 TermLabel = skimage.measure.label(minutiaeTerm, connectivity=1)
-ShowResults(skel, TermLabel, BifLabel)
+ShowResults(binary_img, TermLabel, BifLabel)

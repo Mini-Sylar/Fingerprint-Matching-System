@@ -3,13 +3,20 @@ from datetime import datetime
 
 import cv2
 import numpy as np
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from PyQt5.QtGui import QImageReader
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.patches import ConnectionPatch
+import matplotlib.patches as mpatches
 
 from AlgorithmExamination import Ui_MainWindow
+from Algorithms.Minutiae.Libs.matching import match_tuples
+from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
+# Import Minutiae
+from Algorithms.Minutiae.Minutiae_OBJ import *
+# Import SIFT
 from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 text_filter = "Images ({})".format(
@@ -46,6 +53,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
         # Run SIFT PERFORMANT VERSION
         self.run_sift_performance.clicked.connect(self.run_sift_performant_version)
+        # Run minutiae
+        self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
     def check_if_path_filled(self):
         default_text_train = "Path to training image will show here"
@@ -157,9 +166,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
             # create an axis and draw the images
             plt.figure(num=1)
             plt.imshow(newimg)
-            self.canvas.draw()
             plt.title("Matches Obtained Research Version")
             plt.tight_layout()
+            # Moved canvas draw to end of plot to make sure title shows everytime
+            self.canvas.draw()
             self.statusbar.showMessage("Matches found!", msecs=10000)
             self.Match_Score.setText("%d" % (len(good)))
             #     Populate some labels
@@ -197,18 +207,45 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.Final_Image_Container.addWidget(self.toolbar)
         self.Final_Image_Container.addWidget(self.canvas)
         # Create Canvas For Gaussian Images
-        figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
-        self.canvas_Gaussian = FigureCanvas(figure_Gaussian)
-        toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
-        self.Show_Gaussian_Images.addWidget(toolbar_Gaussian)
+        self.figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
+        self.canvas_Gaussian = FigureCanvas(self.figure_Gaussian)
+        self.toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
+        self.Show_Gaussian_Images.addWidget(self.toolbar_Gaussian)
         self.Show_Gaussian_Images.addWidget(self.canvas_Gaussian)
         # Create Canvas And Add
         figure_DOG = plt.figure(num=3, figsize=(10, 10))
         self.canvas_DOG = FigureCanvas(figure_DOG)
-        # canvas_DOG.setParent(canvas_DOG)
         toolbar_DOG = NavigationToolbar(self.canvas_DOG, self)
         self.Show_DOG_Image.addWidget(toolbar_DOG)
         self.Show_DOG_Image.addWidget(self.canvas_DOG)
+        #     Creating Canvas For Minutiae
+        self.figure_Minutiae_Match = plt.figure(num=4, figsize=(10, 10))
+        self.canvas_minutiae_match = FigureCanvas(self.figure_Minutiae_Match)
+        toolbar_minutiae_match = NavigationToolbar(self.canvas_minutiae_match, self)
+        self.min_matches_layout.addWidget(toolbar_minutiae_match)
+        self.min_matches_layout.addWidget(self.canvas_minutiae_match)
+        # Creating Canvas for Equalized Image
+        self.figure_equalized, self.canvas_equalized, self.toolbar_equalized = self.initialize_canvas(5)
+        self.norm_layout.addWidget(self.toolbar_equalized)
+        self.norm_layout.addWidget(self.canvas_equalized)
+        # Creating Canvas for Binarized Image
+        self.figure_binarized, self.canvas_binarized, self.toolbar_binarized = self.initialize_canvas(6)
+        self.bin_layout.addWidget(self.toolbar_binarized)
+        self.bin_layout.addWidget(self.canvas_binarized)
+        # Creating Canvas for Thinned Image
+        self.figure_thinned, self.canvas_thinned, self.toolbar_thinned = self.initialize_canvas(7)
+        self.thin_layout.addWidget(self.toolbar_thinned)
+        self.thin_layout.addWidget(self.canvas_thinned)
+        # Creating Canvas for Enhanced Images
+        self.figure_enhanced, self.canvas_enhanced, self.toolbar_enhanced = self.initialize_canvas(8)
+        self.enhance_layout.addWidget(self.toolbar_enhanced)
+        self.enhance_layout.addWidget(self.canvas_enhanced)
+
+    def initialize_canvas(self, figure_num, row: int = 10, column: int = 10):
+        figure = plt.figure(num=figure_num, figsize=(row, column))
+        canvas = FigureCanvas(figure)
+        toolbar = NavigationToolbar(canvas, self)
+        return figure, canvas, toolbar
 
     def show_Gaussian_SIFT_Research(self):
         self.canvas_Gaussian.figure.clear()
@@ -216,11 +253,17 @@ class UiCode(Ui_MainWindow, QMainWindow):
         Gaussian_images = self.sift_train.showGaussianBlurImages()
         # create a 10 by 10 grid here
         plt.figure(num=2, figsize=(10, 10))  # specifying the overall grid size
+        # Change font size to make sure everything fits in the canvas
+        plt.rcParams.update({'font.size': 8})
         for i in range(len(Gaussian_images)):
             plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
             plt.imshow(Gaussian_images[i], cmap='Greys_r')
-            self.canvas_Gaussian.draw()
         plt.tight_layout()
+        # Set Details in Label Here
+        self.G_Scale_Count.setText(str(len(Gaussian_images)))
+        self.G_Octaves.setText(str((len(Gaussian_images)) // 6))
+        self.canvas_Gaussian.draw()
+        self.canvas_Gaussian.updateGeometry()
 
     def show_DOG_SIFT_Research(self):
         self.canvas_DOG.figure.clear()
@@ -228,15 +271,17 @@ class UiCode(Ui_MainWindow, QMainWindow):
         doG_images = self.sift_train.showDOGImages()
         # # create a 10 by 10 grid here
         plt.figure(num=3, figsize=(10, 10))  # specifying the overall grid size
+        plt.rcParams.update({'font.size': 8})
+        plt.title("Gaussian Scale Space and Extrema")
         for i in range(len(doG_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
             plt.imshow(doG_images[i], cmap='Greys_r')
-            self.canvas_DOG.draw()
         plt.tight_layout()
+        self.canvas_DOG.draw()
 
-###############################
-# SIFT PERFORMANT VERSION #
-###############################
+    ###############################
+    # SIFT PERFORMANT VERSION #
+    ###############################
 
     def run_sift_performant_version(self):
         self.canvas.figure.clear()
@@ -261,7 +306,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             if m.distance < 0.6 * n.distance:
                 matchesMask[i] = [1, 0]
                 good.add(m)
-        print("Performant ",len(good))
+        print("Performant ", len(good))
         print(datetime.now() - start)
         draw_params = dict(matchColor=(0, 255, 255),
                            singlePointColor=(255, 0, 0),
@@ -271,9 +316,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # create an axis and draw the images
         plt.figure(num=1)
         plt.imshow(img3)
-        self.canvas.draw()
         plt.title("Matches Obtained Performant Version")
         plt.tight_layout()
+        # Move self.canvas.draw() to end to make sure title is rendered every single time
+        self.canvas.draw()
         # Extra Stuff
         self.statusbar.showMessage("Matches found!", msecs=10000)
         self.Match_Score.setText("%d" % (len(good)))
@@ -298,6 +344,136 @@ class UiCode(Ui_MainWindow, QMainWindow):
             # Set Verdict Here
             self.Verdict.setStyleSheet("color:red;")
             self.Verdict.setText("Fingerprints/Images Are Not A Match!")
+
+    ###############################
+    # Minutiae Algorithm
+    ###############################
+    def run_minutiae_algorithm(self):
+        self.canvas_minutiae_match.figure.clear()
+        # Create 2 Minutiae Objects Here
+        # self.minutiae = Minutiae()
+        coor_termination1, coor_bifurcation1 = detectAndComputeMinutiae(self.Path_To_Train.text())
+        print(len(coor_termination1))
+        coor_termination2, coor_bifurcation2 = detectAndComputeMinutiae(self.Path_To_Query.text())
+        # Image Profiles
+        img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
+        img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
+        self.termin_disp = img_profile1_term
+        self.bif_disp = img_profile1_bif
+
+        # Image 2 Profiles
+        img_profile2_term = generate_tuple_profile(coor_termination2)
+        img_profile2_bif = generate_tuple_profile(coor_bifurcation2)
+
+        # Load Images here (should already be loaded when tranformed into class)
+        # Plot Terminations as red and bifurcations as blue
+        train_image = load_image(self.Path_To_Train.text())
+        query_image = load_image(self.Path_To_Query.text())
+        # Plot Termination and Bifurcation Circle
+        ax = self.figure_Minutiae_Match.subplots(1, 2)
+        self.figure_Minutiae_Match.suptitle('Matches Obtained Minutiae', fontsize=12)
+        # Images Here
+        for y, x in img_profile1_term.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
+            ax[0].add_artist(termination)
+            ax[0].imshow(train_image)
+
+        for y, x in img_profile1_bif.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax[0].add_artist(bifurcation)
+            ax[0].imshow(train_image)
+
+        # FOr Query Image
+        for y, x in img_profile2_term.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
+            ax[1].add_artist(termination)
+            ax[1].imshow(query_image)
+
+        for y, x in img_profile1_bif.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax[1].add_artist(bifurcation)
+            ax[1].imshow(query_image)
+
+        # # Common points Termination
+        common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
+                                                                                        img_profile2_term)
+        common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
+                                                                                        img_profile2_bif)
+
+        print(len(common_points_train_termination))
+
+        # Draw Lines to Match points, points with "X" means there was no match on the other image
+        for x, y in common_points_query_termination:
+            # Reverse points since ConnectPatch is flipped
+            xy = (y, x)
+            con = ConnectionPatch(xyA=xy, xyB=xy, coordsA="data", coordsB="data",
+                                  axesA=ax[0], axesB=ax[1], color="red")
+            ax[1].add_artist(con)
+
+            ax[0].plot(x, y, 'rx', markersize=5)
+            ax[1].plot(x, y, 'rx', markersize=5)
+
+        for x, y in common_points_query_bifurcation:
+            # Reverse points since ConnectPatch is flipped
+            xy = (y, x)
+            con = ConnectionPatch(xyA=xy, xyB=xy, coordsA="data", coordsB="data",
+                                  axesA=ax[0], axesB=ax[1], color="blue")
+            ax[1].add_artist(con)
+            ax[0].plot(x, y, 'bx', markersize=5)
+            ax[1].plot(x, y, 'bx', markersize=5)
+
+        self.canvas_minutiae_match.draw()
+        self.generateExtraMinutiae()
+
+    #         set label texts here
+    def setMinutiaeLabelText(self):
+        ...
+
+    def generateExtraMinutiae(self):
+        train_image = load_image(self.Path_To_Train.text(), gray=True)
+        # Equalized Image
+        equalized_image = histogram_equalisation(train_image)
+        ax_equalized = self.figure_equalized.subplots(1, 1)
+        ax_equalized.imshow(np.hstack((train_image, equalized_image)), cmap='gray')
+        self.figure_equalized.suptitle('Histogram Equalization/Normalization', fontsize=12)
+
+        # Binarized Image
+        binarized_image = binarise(equalized_image)
+        ax_binarized = self.figure_binarized.subplots(1, 1)
+        ax_binarized.imshow(np.hstack((train_image, binarized_image)), cmap='gray')
+        self.figure_binarized.suptitle('Binarized Image', fontsize=12)
+
+        # Thinned Image
+        thinned_image = thin_image(train_image)
+        ax_thinned = self.figure_thinned.subplots(1, 1)
+        ax_thinned.imshow(thinned_image, cmap='gray')
+        self.figure_thinned.suptitle('Thinned Image', fontsize=12)
+
+        # Enhanced Image
+        enhanced_image = enhance_image(train_image, skeletonise=True, min_wave_length=3)
+        ax_enhanced = self.figure_enhanced.subplots(1, 1)
+        # FOr Query Image
+        for y, x in self.termin_disp.keys():
+            termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
+            ax_enhanced.add_artist(termination)
+            ax_enhanced.imshow(enhanced_image)
+        for y, x in self.bif_disp.keys():
+            bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
+            ax_enhanced.add_artist(bifurcation)
+            ax_enhanced.imshow(enhanced_image)
+        # Create Legend Here
+        patches = [mpatches.Patch(color="red", label="Terminations"),
+                   mpatches.Patch(color="blue", label="Bifurcations")]
+        # put those patched as legend-handles into the legend
+        ax_enhanced.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        ax_enhanced.imshow(enhanced_image, cmap="gray")
+        self.figure_enhanced.suptitle('Enhanced Image With Terminations and Bifurcations', fontsize=12)
+
+        self.canvas_equalized.draw()
+        self.canvas_binarized.draw()
+        self.canvas_thinned.draw()
+
+        # todo: Clean up and put into functions
 
 
 if __name__ == "__main__":
