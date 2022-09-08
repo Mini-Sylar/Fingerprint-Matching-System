@@ -435,16 +435,19 @@ class UiCode(Ui_MainWindow, QMainWindow):
         equalized_image = histogram_equalisation(train_image)
         ax_equalized = self.figure_equalized.subplots(1, 1)
         ax_equalized.imshow(np.hstack((train_image, equalized_image)), cmap='gray')
+        self.figure_equalized.suptitle('Histogram Equalization/Normalization', fontsize=12)
 
         # Binarized Image
         binarized_image = binarise(equalized_image)
         ax_binarized = self.figure_binarized.subplots(1, 1)
         ax_binarized.imshow(np.hstack((train_image, binarized_image)), cmap='gray')
+        self.figure_binarized.suptitle('Binarized Image', fontsize=12)
 
         # Thinned Image
         thinned_image = thin_image(train_image)
         ax_thinned = self.figure_thinned.subplots(1, 1)
         ax_thinned.imshow(thinned_image, cmap='gray')
+        self.figure_binarized.suptitle('Thinned Image', fontsize=12)
 
         # Enhanced Image
         enhanced_image = enhance_image(train_image, skeletonise=True)
@@ -464,6 +467,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # put those patched as legend-handles into the legend
         ax_enhanced.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         ax_enhanced.imshow(enhanced_image, cmap="gray")
+        self.figure_enhanced.suptitle('Enhanced Image With Terminations and Bifurcations', fontsize=12)
 
         self.canvas_equalized.draw()
         self.canvas_binarized.draw()
