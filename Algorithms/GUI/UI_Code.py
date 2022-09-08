@@ -450,7 +450,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.figure_thinned.suptitle('Thinned Image', fontsize=12)
 
         # Enhanced Image
-        enhanced_image = enhance_image(train_image, skeletonise=True)
+        enhanced_image = enhance_image(train_image, skeletonise=True, min_wave_length=3)
         ax_enhanced = self.figure_enhanced.subplots(1, 1)
         # FOr Query Image
         for y, x in self.termin_disp.keys():
