@@ -483,20 +483,20 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.minutiae_terminations.setText(str(len(self.termin_disp.keys())))  # Terminations score here
         self.minutiae_bifurcations.setText(str(len(self.bif_disp.keys())))  # Bifurcation score
         # Verdict logic here
-        if self.minutiae_value < 7:
+        if self.minutiae_value >= 7:
+            self.minutiae_verdict.setStyleSheet("color:green;")
+            self.minutiae_verdict.setText("Fingerprints Are A Good Match")
+            self.min_score_value.setStyleSheet("color:green;")
+            self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
+        elif self.minutiae_value >= 3:
             self.minutiae_verdict.setStyleSheet("color:orange;")
-            self.minutiae_verdict.setText("Fingerprints Match With A Low Score")
+            self.minutiae_verdict.setText("Fingerprints Match With A Really Low Score")
             self.min_score_value.setStyleSheet("color:orange;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
-        elif self.minutiae_value < 3:
-            self.minutiae_verdict.setStyleSheet("color:red;")
-            self.minutiae_verdict.setText("Fingerprints Do not Match")
-            self.min_score_value.setStyleSheet("color:red;")
-            self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
         else:
-            self.minutiae_verdict.setStyleSheet("color:green;")
-            self.minutiae_verdict.setText("Fingerprints are a good match")
-            self.min_score_value.setStyleSheet("color:green;")
+            self.minutiae_verdict.setStyleSheet("color:red;")
+            self.minutiae_verdict.setText("Fingerprints do not match")
+            self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
 
 
