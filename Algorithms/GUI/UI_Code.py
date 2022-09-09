@@ -486,17 +486,17 @@ class UiCode(Ui_MainWindow, QMainWindow):
         if self.minutiae_value < 7:
             self.minutiae_verdict.setStyleSheet("color:orange;")
             self.minutiae_verdict.setText("Fingerprints Match With A Low Score")
-            self.minutiae_min_match.setStyleSheet("color:orange;")
+            self.min_score_value.setStyleSheet("color:orange;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
         elif self.minutiae_value < 3:
             self.minutiae_verdict.setStyleSheet("color:red;")
             self.minutiae_verdict.setText("Fingerprints Do not Match")
-            self.minutiae_min_match.setStyleSheet("color:red;")
+            self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
         else:
             self.minutiae_verdict.setStyleSheet("color:green;")
             self.minutiae_verdict.setText("Fingerprints are a good match")
-            self.minutiae_min_match.setStyleSheet("color:green;")
+            self.min_score_value.setStyleSheet("color:green;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
 
 
