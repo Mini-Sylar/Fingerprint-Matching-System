@@ -256,7 +256,7 @@
             <item row="1" column="1">
              <widget class="QLabel" name="minutiae_min_match">
               <property name="text">
-               <string/>
+               <string>10</string>
               </property>
              </widget>
             </item>

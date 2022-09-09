@@ -350,21 +350,20 @@ class UiCode(Ui_MainWindow, QMainWindow):
     ###############################
     def run_minutiae_algorithm(self):
         self.canvas_minutiae_match.figure.clear()
-        # Create 2 Minutiae Objects Here
-        # self.minutiae = Minutiae()
-        coor_termination1, coor_bifurcation1 = detectAndComputeMinutiae(self.Path_To_Train.text())
-        print(len(coor_termination1))
-        coor_termination2, coor_bifurcation2 = detectAndComputeMinutiae(self.Path_To_Query.text())
+        coor_termination1, coor_bifurcation1,total_bif_term1 = detectAndComputeMinutiae(self.Path_To_Train.text())
+        coor_termination2, coor_bifurcation2,total_bif_term2 = detectAndComputeMinutiae(self.Path_To_Query.text())
         # Image Profiles
         img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
         img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
+        # This was created only for display purposes
         self.termin_disp = img_profile1_term
         self.bif_disp = img_profile1_bif
-
         # Image 2 Profiles
         img_profile2_term = generate_tuple_profile(coor_termination2)
         img_profile2_bif = generate_tuple_profile(coor_bifurcation2)
-
+        # For caluclation process
+        calc_bif_term1  = generate_tuple_profile(total_bif_term1)
+        calc_bif_term2  = generate_tuple_profile(total_bif_term2)
         # Load Images here (should already be loaded when tranformed into class)
         # Plot Terminations as red and bifurcations as blue
         train_image = load_image(self.Path_To_Train.text())
@@ -400,7 +399,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
         common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
                                                                                         img_profile2_bif)
 
-        print(len(common_points_train_termination))
+        common_points_both_train,common_points_both_query = match_tuples(calc_bif_term1,calc_bif_term2)
+
+        print(f"common_both_train {len(common_points_both_train)} common_both_query {len(common_points_both_query)}")
+        self.minutiae_value  = len(common_points_both_query)
 
         # Draw Lines to Match points, points with "X" means there was no match on the other image
         for x, y in common_points_query_termination:
@@ -473,7 +475,29 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.canvas_binarized.draw()
         self.canvas_thinned.draw()
 
+        self.setMinutiaeLabelScores()
         # todo: Clean up and put into functions
+        # todo: Update labels with information from results
+
+    def setMinutiaeLabelScores(self):
+        self.minutiae_terminations.setText(str(len(self.termin_disp.keys())))  # Terminations score here
+        self.minutiae_bifurcations.setText(str(len(self.bif_disp.keys())))  # Bifurcation score
+        # Verdict logic here
+        if self.minutiae_value < 7:
+            self.minutiae_verdict.setStyleSheet("color:orange;")
+            self.minutiae_verdict.setText("Fingerprints Match With A Low Score")
+            self.minutiae_min_match.setStyleSheet("color:orange;")
+            self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
+        elif self.minutiae_value < 3:
+            self.minutiae_verdict.setStyleSheet("color:red;")
+            self.minutiae_verdict.setText("Fingerprints Do not Match")
+            self.minutiae_min_match.setStyleSheet("color:red;")
+            self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
+        else:
+            self.minutiae_verdict.setStyleSheet("color:green;")
+            self.minutiae_verdict.setText("Fingerprints are a good match")
+            self.minutiae_min_match.setStyleSheet("color:green;")
+            self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
 
 
 if __name__ == "__main__":

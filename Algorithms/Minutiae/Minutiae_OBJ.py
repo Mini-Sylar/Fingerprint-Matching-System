@@ -18,8 +18,8 @@ def detectAndComputeMinutiae(image_path):
 
     minutiae = process_minutiae(enhanced_image)
     # Split Minutiae into terminations and bifurcations
-    terminations, bifurcation = minutiae
-    return terminations, bifurcation
+    terminations, bifurcation,total = minutiae
+    return terminations, bifurcation,total
 
 
 def showEqualizedImage(image):
