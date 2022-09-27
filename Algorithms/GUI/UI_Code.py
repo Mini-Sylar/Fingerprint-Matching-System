@@ -2,6 +2,7 @@ import sys
 from datetime import datetime
 
 import cv2
+import matplotlib.patches as mpatches
 import numpy as np
 from PyQt5.QtGui import QImageReader
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
@@ -9,7 +10,6 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.patches import ConnectionPatch
-import matplotlib.patches as mpatches
 
 from AlgorithmExamination import Ui_MainWindow
 from Algorithms.Minutiae.Libs.matching import match_tuples
@@ -258,7 +258,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         for i in range(len(Gaussian_images)):
             plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
             plt.imshow(Gaussian_images[i], cmap='Greys_r')
-        plt.tight_layout()
+        # plt.tight_layout()
         # Set Details in Label Here
         self.G_Scale_Count.setText(str(len(Gaussian_images)))
         self.G_Octaves.setText(str((len(Gaussian_images)) // 6))
@@ -276,7 +276,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         for i in range(len(doG_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
             plt.imshow(doG_images[i], cmap='Greys_r')
-        plt.tight_layout()
+        # plt.tight_layout()
         self.canvas_DOG.draw()
 
     ###############################
@@ -375,23 +375,23 @@ class UiCode(Ui_MainWindow, QMainWindow):
         for y, x in img_profile1_term.keys():
             termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
             ax[0].add_artist(termination)
-            ax[0].imshow(train_image)
+            ax[0].imshow(query_image)
 
         for y, x in img_profile1_bif.keys():
             bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
             ax[0].add_artist(bifurcation)
-            ax[0].imshow(train_image)
+            ax[0].imshow(query_image)
 
         # FOr Query Image
         for y, x in img_profile2_term.keys():
             termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
             ax[1].add_artist(termination)
-            ax[1].imshow(query_image)
+            ax[1].imshow(train_image)
 
         for y, x in img_profile1_bif.keys():
             bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
             ax[1].add_artist(bifurcation)
-            ax[1].imshow(query_image)
+            ax[1].imshow(train_image)
 
         # # Common points Termination
         common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
@@ -429,7 +429,16 @@ class UiCode(Ui_MainWindow, QMainWindow):
 
     #         set label texts here
     def setMinutiaeLabelText(self):
-        ...
+        self.block_or_bin.setText("16")
+        self.block_fr_min.setText("38")
+        self.thresh_bin_enh.setText("0.1")
+        self.skeleton_en.setText("True")
+        self.max_wav_min.setText('15')
+        self.min_wav_min.setText('5')
+        # Binarization
+        self.threshold_bin.setText(f"{thresh}")
+        self.delta_bin.setText("0.95")
+        self.window_bin.setText("8")
 
     def generateExtraMinutiae(self):
         train_image = load_image(self.Path_To_Train.text(), gray=True)
@@ -476,8 +485,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.canvas_thinned.draw()
 
         self.setMinutiaeLabelScores()
+        self.setMinutiaeLabelText()
         # todo: Clean up and put into functions
-        # todo: Update labels with information from results
 
     def setMinutiaeLabelScores(self):
         self.minutiae_terminations.setText(str(len(self.termin_disp.keys())))  # Terminations score here
