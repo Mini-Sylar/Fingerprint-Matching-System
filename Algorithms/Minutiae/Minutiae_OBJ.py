@@ -2,15 +2,16 @@ from Algorithms.Minutiae.Libs.basics import load_image, display_image
 from Algorithms.Minutiae.Libs.enhancing import enhance_image
 from Algorithms.Minutiae.Libs.minutiae import process_minutiae
 from Algorithms.Minutiae.Libs.enhance_updated import FingerprintImageEnhancer
-from Algorithms.Minutiae.Libs.processing import thin_image, clean_points, binarise, histogram_equalisation
+from Algorithms.Minutiae.Libs.processing import thin_image, clean_points, binarise, histogram_equalisation,thresh
 
+# Fallback to new enhancer if errors persist
 enhancer = FingerprintImageEnhancer()
 
 
 def detectAndComputeMinutiae(image_path):
     # Load images
     image_raw = load_image(image_path, gray=True)
-    enhanced_image = enhance_image(image_raw, skeletonise=True, min_wave_length=3)
+    enhanced_image = enhance_image(image_raw, skeletonise=True, min_wave_length=1)
     # Use New Enhancer Here
     # enhanced_image = enhancer.enhance(image_raw)
     # image_enhanced = thin_image(enhanced_image)
