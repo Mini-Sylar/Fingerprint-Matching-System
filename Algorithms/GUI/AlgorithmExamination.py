@@ -79,7 +79,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.Show_Gaussian_Images = QtWidgets.QVBoxLayout()
-        self.Show_Gaussian_Images.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+        self.Show_Gaussian_Images.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)
         self.Show_Gaussian_Images.setObjectName("Show_Gaussian_Images")
         self.verticalLayout_9.addLayout(self.Show_Gaussian_Images)
         self.formLayout_4 = QtWidgets.QFormLayout()
@@ -343,7 +343,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.SIFT.setCurrentIndex(0)
-        self.Minutiae.setCurrentIndex(0)
+        self.Minutiae.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -363,7 +363,7 @@ class Ui_MainWindow(object):
         self.SIFT.setTabText(self.SIFT.indexOf(self.DoG), _translate("MainWindow", "Difference of Gaussian"))
         self.min_match_score.setText(_translate("MainWindow", "Match Score"))
         self.label_8.setText(_translate("MainWindow", "Min Match"))
-        self.minutiae_min_match.setText(_translate("MainWindow", "10"))
+        self.minutiae_min_match.setText(_translate("MainWindow", "5"))
         self.label_11.setText(_translate("MainWindow", "Terminations"))
         self.label_13.setText(_translate("MainWindow", "Bifurcations"))
         self.label_15.setText(_translate("MainWindow", "Verdict"))
