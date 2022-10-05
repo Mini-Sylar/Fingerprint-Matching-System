@@ -46,6 +46,7 @@ for value, title in enumerate(sheet_titles.values()):
 class UiCode(Ui_MainWindow, QMainWindow):
     def __init__(self):
         super(UiCode, self).__init__()
+        self.row = 1
         self.toolbar = None
         self.canvas = None
         self.figure_match = None
@@ -72,7 +73,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
         # Get Data
-        self.record_data.clicked.connect(self.write_data)
+        self.record_data.clicked.connect(lambda : self.write_data(self.row))
+        print(self.row)
         # Run minutiae
         self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
@@ -533,15 +535,15 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
 
-    def write_data(self):
+    def write_data(self,row):
         #   Write name of file to Excel sheet
-        row = 1
+        existingWorksheet = workbook.get_worksheet_by_name('Sheet1')
         query_title = self.Path_To_Query.text().split("/")
         train_title = self.Path_To_Train.text().split("/")
         # Write Query Image Here
         worksheet.write(row, 0, f"{query_title[-1]}\n{train_title[-1]}")
         # Add Alteration Type
-        worksheet.write(row, 1, train_title[6])
+        worksheet.write(row, 1, train_title[7])
         #### SIFT ####
         worksheet.write(row, 2, self.Match_Score.text())
         # Time
@@ -555,10 +557,17 @@ class UiCode(Ui_MainWindow, QMainWindow):
         worksheet.write(row, 6, self.time_taken_minutiae)
         # Verdict
         worksheet.write(row, 7, self.minutiae_verdict.text())
-        # Increment Row
-        row += 2
-        workbook.close()
+        self.row = self.row +1
+        print(self.row)
+        # workbook.close()
         self.statusbar.showMessage("Data Written Successfully", msecs=10000)
+
+    def closeEvent(self, event):
+        try:
+            workbook.close()
+        except AttributeError:
+            print("There is no table")
+        super().closeEvent(event)
 
 
 if __name__ == "__main__":
