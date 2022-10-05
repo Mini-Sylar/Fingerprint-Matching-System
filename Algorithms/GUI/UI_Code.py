@@ -23,8 +23,8 @@ from Algorithms.SIFT.SIFT_OBJ import SIFT
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
 # collect Data Here
-workbook  = xlsxwriter.Workbook("Data.xlsx")
-worksheet  = workbook.add_worksheet()
+workbook = xlsxwriter.Workbook("Data.xlsx")
+worksheet = workbook.add_worksheet()
 worksheet.set_column(0, 13, 50)
 # Set titles here
 sheet_titles = {0: "Fingerprint image",
@@ -41,6 +41,8 @@ sheet_titles = {0: "Fingerprint image",
                 }
 for value, title in enumerate(sheet_titles.values()):
     worksheet.write(0, value, title)
+
+
 class UiCode(Ui_MainWindow, QMainWindow):
     def __init__(self):
         super(UiCode, self).__init__()
@@ -62,7 +64,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Connect functions to UI here
         self.set_parameters_sift()
         self.connect_functions()
-
 
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
@@ -371,8 +372,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def run_minutiae_algorithm(self):
         self.canvas_minutiae_match.figure.clear()
         start = datetime.now()
-        coor_termination1, coor_bifurcation1,total_bif_term1 = detectAndComputeMinutiae(self.Path_To_Train.text())
-        coor_termination2, coor_bifurcation2,total_bif_term2 = detectAndComputeMinutiae(self.Path_To_Query.text())
+        coor_termination1, coor_bifurcation1, total_bif_term1 = detectAndComputeMinutiae(self.Path_To_Train.text())
+        coor_termination2, coor_bifurcation2, total_bif_term2 = detectAndComputeMinutiae(self.Path_To_Query.text())
         # Image Profiles
         img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
         img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
@@ -383,8 +384,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
         img_profile2_term = generate_tuple_profile(coor_termination2)
         img_profile2_bif = generate_tuple_profile(coor_bifurcation2)
         # For caluclation process
-        calc_bif_term1  = generate_tuple_profile(total_bif_term1)
-        calc_bif_term2  = generate_tuple_profile(total_bif_term2)
+        calc_bif_term1 = generate_tuple_profile(total_bif_term1)
+        calc_bif_term2 = generate_tuple_profile(total_bif_term2)
         # Load Images here (should already be loaded when tranformed into class)
         # Plot Terminations as red and bifurcations as blue
         train_image = load_image(self.Path_To_Train.text())
@@ -396,15 +397,13 @@ class UiCode(Ui_MainWindow, QMainWindow):
         common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
                                                                                         img_profile2_bif)
 
-        common_points_both_train,common_points_both_query = match_tuples(calc_bif_term1,calc_bif_term2)
+        common_points_both_train, common_points_both_query = match_tuples(calc_bif_term1, calc_bif_term2)
 
         # Time ends here
-        self.time_taken_minutiae = datetime.now() -start
+        self.time_taken_minutiae = datetime.now() - start
         # Plot Termination and Bifurcation Circle
         ax = self.figure_Minutiae_Match.subplots(1, 2)
         self.figure_Minutiae_Match.suptitle('Matches Obtained Minutiae', fontsize=12)
-
-
 
         # Images Here
         for y, x in img_profile1_term.keys():
@@ -427,11 +426,8 @@ class UiCode(Ui_MainWindow, QMainWindow):
             bifurcation = plt.Circle((x, y), radius=1, linewidth=2, color='blue', fill=False)
             ax[1].add_artist(bifurcation)
             ax[1].imshow(train_image)
-
-
-
-        print(f"common_both_train {len(common_points_both_train)} common_both_query {len(common_points_both_query)}")
-        self.minutiae_value  = len(common_points_both_query)
+        # print(f"common_both_train {len(common_points_both_train)} common_both_query {len(common_points_both_query)}")
+        self.minutiae_value = len(common_points_both_query)
 
         # Draw Lines to Match points, points with "X" means there was no match on the other image
         for x, y in common_points_query_termination:
@@ -545,20 +541,20 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Write Query Image Here
         worksheet.write(row, 0, f"{query_title[-1]}\n{train_title[-1]}")
         # Add Alteration Type
-        worksheet.write(row,1,train_title[6])
+        worksheet.write(row, 1, train_title[6])
         #### SIFT ####
-        worksheet.write(row,2,self.Match_Score.text())
+        worksheet.write(row, 2, self.Match_Score.text())
         # Time
-        worksheet.write(row,3,self.time_taken)
+        worksheet.write(row, 3, self.time_taken)
         # Verdict
-        worksheet.write(row,4,self.Verdict.text())
+        worksheet.write(row, 4, self.Verdict.text())
 
         #### Minutiae ####
-        worksheet.write(row,5,self.min_score_value.text())
+        worksheet.write(row, 5, self.min_score_value.text())
         # Time
-        worksheet.write(row,6,self.time_taken_minutiae)
+        worksheet.write(row, 6, self.time_taken_minutiae)
         # Verdict
-        worksheet.write(row,7,self.minutiae_verdict.text())
+        worksheet.write(row, 7, self.minutiae_verdict.text())
         # Increment Row
         row += 2
         workbook.close()

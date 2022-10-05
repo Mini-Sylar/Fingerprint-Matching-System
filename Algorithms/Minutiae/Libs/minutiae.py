@@ -68,7 +68,7 @@ def extract_minutiae(image: np.array):
 
                 # Add bifurcation coordinates
                 bifurcations.append((i, j))
-    print(f"terminations {len(terminations)}, bifurcations {len(bifurcations)}")
+    # print(f"terminations {len(terminations)}, bifurcations {len(bifurcations)}")
     return terminations, bifurcations
 
 
