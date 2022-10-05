@@ -220,7 +220,7 @@
       <item row="0" column="1">
        <widget class="QTabWidget" name="Minutiae">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="Minutiae_Matches">
          <attribute name="title">
@@ -526,12 +526,12 @@
         </widget>
        </item>
        <item row="0" column="1" alignment="Qt::AlignHCenter">
-        <widget class="QPushButton" name="run_sift_performance">
+        <widget class="QPushButton" name="record_data">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Run SIFT Algorithm (Performance)</string>
+          <string>Record Data</string>
          </property>
         </widget>
        </item>

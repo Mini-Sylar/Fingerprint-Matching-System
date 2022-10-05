@@ -292,10 +292,10 @@ class Ui_MainWindow(object):
         self.generate_gaussian_images.setMinimumSize(QtCore.QSize(200, 0))
         self.generate_gaussian_images.setObjectName("generate_gaussian_images")
         self.gridLayout_2.addWidget(self.generate_gaussian_images, 1, 0, 1, 1, QtCore.Qt.AlignLeft)
-        self.run_sift_performance = QtWidgets.QPushButton(self.ExtraActionsResearch)
-        self.run_sift_performance.setEnabled(False)
-        self.run_sift_performance.setObjectName("run_sift_performance")
-        self.gridLayout_2.addWidget(self.run_sift_performance, 0, 1, 1, 1, QtCore.Qt.AlignHCenter)
+        self.record_data = QtWidgets.QPushButton(self.ExtraActionsResearch)
+        self.record_data.setEnabled(False)
+        self.record_data.setObjectName("record_data")
+        self.gridLayout_2.addWidget(self.record_data, 0, 1, 1, 1, QtCore.Qt.AlignHCenter)
         self.generate_DOG_images = QtWidgets.QPushButton(self.ExtraActionsResearch)
         self.generate_DOG_images.setEnabled(False)
         self.generate_DOG_images.setMinimumSize(QtCore.QSize(200, 0))
@@ -343,7 +343,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.SIFT.setCurrentIndex(0)
-        self.Minutiae.setCurrentIndex(3)
+        self.Minutiae.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -383,7 +383,7 @@ class Ui_MainWindow(object):
         self.Minutiae.setTabText(self.Minutiae.indexOf(self.Thinned), _translate("MainWindow", "Thinning"))
         self.run_sift_research.setText(_translate("MainWindow", "Run SIFT Algorithm (Research)"))
         self.generate_gaussian_images.setText(_translate("MainWindow", "Generate Gaussian Images"))
-        self.run_sift_performance.setText(_translate("MainWindow", "Run SIFT Algorithm (Performance)"))
+        self.record_data.setText(_translate("MainWindow", "Record Data"))
         self.generate_DOG_images.setText(_translate("MainWindow", "Generate DoG Images"))
         self.run_minutiae.setText(_translate("MainWindow", "Run Minutiae Algorithm"))
         self.QueryImage.setText(_translate("MainWindow", "Select Query Image"))
