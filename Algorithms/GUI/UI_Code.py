@@ -562,6 +562,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Increment Row
         row += 2
         workbook.close()
+        self.statusbar.showMessage("Data Written Successfully", msecs=10000)
 
 
 if __name__ == "__main__":
