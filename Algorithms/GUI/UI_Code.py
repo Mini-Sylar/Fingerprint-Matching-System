@@ -557,7 +557,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         worksheet.write(row, 6, self.time_taken_minutiae)
         # Verdict
         worksheet.write(row, 7, self.minutiae_verdict.text())
-        self.row = self.row +1
+        self.row = self.row +2
         print(self.row)
         # workbook.close()
         self.statusbar.showMessage("Data Written Successfully", msecs=10000)
@@ -566,7 +566,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         try:
             workbook.close()
         except AttributeError:
-            print("There is no table")
+            print("Workbook not created")
         super().closeEvent(event)
 
 
