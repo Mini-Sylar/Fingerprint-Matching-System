@@ -4,6 +4,7 @@ from datetime import datetime
 import cv2
 import matplotlib.patches as mpatches
 import numpy as np
+import xlsxwriter
 from PyQt5.QtGui import QImageReader
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
@@ -21,8 +22,25 @@ from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
+# collect Data Here
+workbook  = xlsxwriter.Workbook("Data.xlsx")
+worksheet  = workbook.add_worksheet()
+worksheet.set_column(0, 13, 50)
+# Set titles here
+sheet_titles = {0: "Fingerprint image",
 
+                1: "Alteration Type",
 
+                2: "Match Score (SIFT)",
+                3: "Time (SIFT)",
+                4: "Verdict (SIFT)",
+
+                5: "Match Score (Minutiae)",
+                6: "Time (Minutiae)",
+                7: "Verdict (Minutiae)",
+                }
+for value, title in enumerate(sheet_titles.values()):
+    worksheet.write(0, value, title)
 class UiCode(Ui_MainWindow, QMainWindow):
     def __init__(self):
         super(UiCode, self).__init__()
@@ -45,14 +63,15 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.set_parameters_sift()
         self.connect_functions()
 
+
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
         self.TrainImage.clicked.connect(self.load_image_train)
         self.run_sift_research.clicked.connect(self.enableButtons)
         self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
-        # Run SIFT PERFORMANT VERSION
-        self.run_sift_performance.clicked.connect(self.run_sift_performant_version)
+        # Get Data
+        self.record_data.clicked.connect(self.write_data)
         # Run minutiae
         self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
@@ -61,7 +80,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         default_text_query = "Path to query image will show here"
         if self.Path_To_Train.text() != default_text_train and self.Path_To_Query.text() != default_text_query:
             self.run_sift_research.setEnabled(True)
-            self.run_sift_performance.setEnabled(True)
+            self.record_data.setEnabled(True)
             self.run_minutiae.setEnabled(True)
 
     def enableButtons(self):
@@ -118,6 +137,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # initialize training image here instead to since research version distorts image after processing
         self.train_image = cv2.imread(self.Path_To_Train.text(), 0)
         MIN_MATCH_COUNT = 18
+        start = datetime.now()
         kp1, des1 = self.sift_query.computeKeypointsAndDescriptors(self.query_image)
         kp2, des2 = self.sift_train.computeKeypointsAndDescriptors(self.train_image)
         # Initialize and use FLANN
@@ -126,7 +146,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         search_params = dict(checks=37)
         flann = cv2.FlannBasedMatcher(index_params, search_params)
         matches = flann.knnMatch(des1, des2, k=2)
-
+        self.time_taken = datetime.now() - start
         # Lowe's ratio test
         good = set()
         for m, n in matches:
@@ -285,7 +305,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
 
     def run_sift_performant_version(self):
         self.canvas.figure.clear()
-        start = datetime.now()
+        self.start_time_sift = datetime.now()
         # find the keypoints and descriptors with SIFT
         self.train_image = cv2.imread(self.Path_To_Train.text(), 0)
         kp1, des1 = self.sift_performance.detectAndCompute(self.query_image, None)
@@ -307,7 +327,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
                 matchesMask[i] = [1, 0]
                 good.add(m)
         print("Performant ", len(good))
-        print(datetime.now() - start)
+
         draw_params = dict(matchColor=(0, 255, 255),
                            singlePointColor=(255, 0, 0),
                            matchesMask=matchesMask,
@@ -350,6 +370,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
     ###############################
     def run_minutiae_algorithm(self):
         self.canvas_minutiae_match.figure.clear()
+        start = datetime.now()
         coor_termination1, coor_bifurcation1,total_bif_term1 = detectAndComputeMinutiae(self.Path_To_Train.text())
         coor_termination2, coor_bifurcation2,total_bif_term2 = detectAndComputeMinutiae(self.Path_To_Query.text())
         # Image Profiles
@@ -368,9 +389,23 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Plot Terminations as red and bifurcations as blue
         train_image = load_image(self.Path_To_Train.text())
         query_image = load_image(self.Path_To_Query.text())
+
+        # # Common points Termination
+        common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
+                                                                                        img_profile2_term)
+        common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
+                                                                                        img_profile2_bif)
+
+        common_points_both_train,common_points_both_query = match_tuples(calc_bif_term1,calc_bif_term2)
+
+        # Time ends here
+        self.time_taken_minutiae = datetime.now() -start
         # Plot Termination and Bifurcation Circle
         ax = self.figure_Minutiae_Match.subplots(1, 2)
         self.figure_Minutiae_Match.suptitle('Matches Obtained Minutiae', fontsize=12)
+
+
+
         # Images Here
         for y, x in img_profile1_term.keys():
             termination = plt.Circle((x, y), radius=1, linewidth=2, color='red', fill=False)
@@ -393,13 +428,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
             ax[1].add_artist(bifurcation)
             ax[1].imshow(train_image)
 
-        # # Common points Termination
-        common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
-                                                                                        img_profile2_term)
-        common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
-                                                                                        img_profile2_bif)
 
-        common_points_both_train,common_points_both_query = match_tuples(calc_bif_term1,calc_bif_term2)
 
         print(f"common_both_train {len(common_points_both_train)} common_both_query {len(common_points_both_query)}")
         self.minutiae_value  = len(common_points_both_query)
@@ -507,6 +536,32 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.minutiae_verdict.setText("Fingerprints do not match")
             self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
+
+    def write_data(self):
+        #   Write name of file to Excel sheet
+        row = 1
+        query_title = self.Path_To_Query.text().split("/")
+        train_title = self.Path_To_Train.text().split("/")
+        # Write Query Image Here
+        worksheet.write(row, 0, f"{query_title[-1]}\n{train_title[-1]}")
+        # Add Alteration Type
+        worksheet.write(row,1,train_title[6])
+        #### SIFT ####
+        worksheet.write(row,2,self.Match_Score.text())
+        # Time
+        worksheet.write(row,3,self.time_taken)
+        # Verdict
+        worksheet.write(row,4,self.Verdict.text())
+
+        #### Minutiae ####
+        worksheet.write(row,5,self.min_score_value.text())
+        # Time
+        worksheet.write(row,6,self.time_taken_minutiae)
+        # Verdict
+        worksheet.write(row,7,self.minutiae_verdict.text())
+        # Increment Row
+        row += 2
+        workbook.close()
 
 
 if __name__ == "__main__":
