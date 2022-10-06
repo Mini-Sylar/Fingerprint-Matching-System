@@ -392,7 +392,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Plot Terminations as red and bifurcations as blue
         train_image = load_image(self.Path_To_Train.text())
         query_image = load_image(self.Path_To_Query.text())
-
+        # TODO: Fix minutiae not working on certain images, look into the enhancer
         # # Common points Termination
         common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
                                                                                         img_profile2_term)
@@ -543,7 +543,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Write Query Image Here
         worksheet.write(row, 0, f"{query_title[-1]}\n{train_title[-1]}")
         # Add Alteration Type
-        worksheet.write(row, 1, train_title[7])
+        worksheet.write(row, 1, train_title[-2])
         #### SIFT ####
         worksheet.write(row, 2, self.Match_Score.text())
         # Time

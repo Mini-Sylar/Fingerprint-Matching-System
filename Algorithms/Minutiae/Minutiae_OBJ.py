@@ -11,7 +11,7 @@ enhancer = FingerprintImageEnhancer()
 def detectAndComputeMinutiae(image_path):
     # Load images
     image_raw = load_image(image_path, gray=True)
-    enhanced_image = enhance_image(image_raw, skeletonise=True, min_wave_length=1)
+    enhanced_image = enhance_image(image_raw, skeletonise=True, min_wave_length=3)
     # Use New Enhancer Here
     # enhanced_image = enhancer.enhance(image_raw)
     # image_enhanced = thin_image(enhanced_image)
