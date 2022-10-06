@@ -513,7 +513,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
 
         self.setMinutiaeLabelScores()
         self.setMinutiaeLabelText()
-        # todo: Clean up and put into functions
 
     def setMinutiaeLabelScores(self):
         self.minutiae_terminations.setText(str(len(self.termin_disp.keys())))  # Terminations score here
@@ -558,7 +557,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Verdict
         worksheet.write(row, 7, self.minutiae_verdict.text())
         self.row = self.row +2
-        print(self.row)
         # workbook.close()
         self.statusbar.showMessage("Data Written Successfully", msecs=10000)
 
