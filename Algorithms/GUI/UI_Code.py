@@ -19,11 +19,13 @@ from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
 from Algorithms.Minutiae.Minutiae_OBJ import *
 # Import SIFT
 from Algorithms.SIFT.SIFT_OBJ import SIFT
+import random
 
+random_variable  = random.randint(0,10000)
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
 # collect Data Here
-workbook = xlsxwriter.Workbook("Data.xlsx")
+workbook = xlsxwriter.Workbook(f"Data_{random_variable}.xlsx")
 worksheet = workbook.add_worksheet()
 worksheet.set_column(0, 13, 50)
 # Set titles here
@@ -563,7 +565,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
     def closeEvent(self, event):
         try:
             workbook.close()
-        except AttributeError:
+        except:
             print("Workbook not created")
         super().closeEvent(event)
 

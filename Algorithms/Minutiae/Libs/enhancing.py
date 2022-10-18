@@ -62,7 +62,7 @@ def enhance_image(image: np.array, block_orientation: int = 16, threshold: float
         image_enhanced = clean_points(image_enhanced)
 
     # Normalising image and processing background - and ridges.
-    # image_enhanced = image_enhanced // image_enhanced.max()  # [0, 1] values
+    image_enhanced = image_enhanced // image_enhanced.max()  # [0, 1] values
 
     # Invert colours if the background is dark.
     # image_enhanced = swap(image_enhanced) if image_enhanced.mean() < .5 else image_enhanced
