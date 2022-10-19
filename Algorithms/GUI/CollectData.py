@@ -1,15 +1,12 @@
-import itertools
-import re
-import math
-from pathlib import Path
 import glob
-import os
+import math
+import re
 from datetime import datetime
+from pathlib import Path
 
 import cv2
 import numpy as np
 import xlsxwriter
-from PyQt5.QtGui import QImageReader
 
 from Algorithms.Minutiae.Libs.matching import match_tuples
 from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
@@ -20,7 +17,7 @@ from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 #
 # # collect Data Here
-workbook = xlsxwriter.Workbook(f"Data_Subject2.xlsx")
+workbook = xlsxwriter.Workbook(f"Data_Subject_First_600.xlsx")
 worksheet = workbook.add_worksheet()
 worksheet.set_column(0, 13, 50)
 # Set titles here
@@ -72,8 +69,9 @@ altered_type ="Easy"
 verdict = ""
 verdict_minutiae = ""
 # Loop to pairs
-for i in range(5,6): # where to end multiply by 6 control where to start and end,
+for i in range(0,100): # where to end multiply by 6 control where to start and end,
     for j in range(counter, counter_end):
+        print(f"Now On {real_images[i]} and {altered_easy[j]}")
         MIN_MATCH_COUNT = 18
         query = cv2.imread(path_to_real+real_images[i],0)
         train = cv2.imread(path_to_altered+altered_easy[j],0)
@@ -113,28 +111,17 @@ for i in range(5,6): # where to end multiply by 6 control where to start and end
         start = datetime.now()
         coor_termination1, coor_bifurcation1, total_bif_term1 = detectAndComputeMinutiae(path_to_real+real_images[i])
         coor_termination2, coor_bifurcation2, total_bif_term2 = detectAndComputeMinutiae(path_to_altered+altered_easy[j])
-        # Image Profiles
-        img_profile1_term = generate_tuple_profile(coor_termination1)  # Image 1 Termination
-        img_profile1_bif = generate_tuple_profile(coor_bifurcation1)  # Image 1 Bifurcation
-        # This was created only for display purposes
-        termin_disp = img_profile1_term
-        bif_disp = img_profile1_bif
-        # Image 2 Profiles
-        img_profile2_term = generate_tuple_profile(coor_termination2)
-        img_profile2_bif = generate_tuple_profile(coor_bifurcation2)
         # For caluclation process
         calc_bif_term1 = generate_tuple_profile(total_bif_term1)
         calc_bif_term2 = generate_tuple_profile(total_bif_term2)
-        # Load Images here (should already be loaded when tranformed into class)
-        # # Common points Termination
-        common_points_query_termination, common_points_train_termination = match_tuples(img_profile1_term,
-                                                                                        img_profile2_term)
-        common_points_query_bifurcation, common_points_train_bifurcation = match_tuples(img_profile1_bif,
-                                                                                        img_profile2_bif)
 
-        common_points_both_train, common_points_both_query = match_tuples(calc_bif_term1, calc_bif_term2)
-
-        minutiae_value = len(common_points_both_query)
+        try:
+            common_points_both_train, common_points_both_query = match_tuples(calc_bif_term1, calc_bif_term2)
+            minutiae_value = len(common_points_both_query)
+        except Exception:
+            print("Unable to find common points defaulting to score 0")
+            minutiae_value = 0
+        # # Score here
         # Time ends here
         time_taken_minutiae = datetime.now() - start
     #     Minutiae Verdict
@@ -160,6 +147,7 @@ for i in range(5,6): # where to end multiply by 6 control where to start and end
         worksheet.write(row,6,time_taken_minutiae)
         worksheet.write(row,7,verdict_minutiae)
         row = row + 2
+        print("=====================================")
     counter += 3
     counter_end += 3
 
