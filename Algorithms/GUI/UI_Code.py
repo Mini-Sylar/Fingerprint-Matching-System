@@ -15,17 +15,17 @@ from matplotlib.patches import ConnectionPatch
 from AlgorithmExamination import Ui_MainWindow
 from Algorithms.Minutiae.Libs.matching import match_tuples
 from Algorithms.Minutiae.Libs.minutiae import generate_tuple_profile
+from Algorithms.Minutiae.Libs.processing import thresh, binarise, thin_image
 # Import Minutiae
 from Algorithms.Minutiae.Minutiae_OBJ import *
 # Import SIFT
 from Algorithms.SIFT.SIFT_OBJ import SIFT
-import random
 
-random_variable  = random.randint(0,10000)
+
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
 # collect Data Here
-workbook = xlsxwriter.Workbook(f"Data_{random_variable}.xlsx")
+workbook = xlsxwriter.Workbook(f"Data_Subject_1_Altered_Medium_Right_Hand_M.xlsx")
 worksheet = workbook.add_worksheet()
 worksheet.set_column(0, 13, 50)
 # Set titles here
@@ -63,10 +63,11 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Create 2 SIFT OBJECTS HERE
         self.sift_query = SIFT()
         self.sift_train = SIFT()
-        self.sift_performance = cv2.SIFT_create()
+        # self.sift_performance = cv2.SIFT_create()
         # Connect functions to UI here
         self.set_parameters_sift()
         self.connect_functions()
+    #     Minutiae
 
     def connect_functions(self):
         self.QueryImage.clicked.connect(self.load_image_query)
@@ -76,7 +77,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
         # Get Data
         self.record_data.clicked.connect(lambda : self.write_data(self.row))
-        print(self.row)
         # Run minutiae
         self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
@@ -490,7 +490,10 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.figure_thinned.suptitle('Thinned Image', fontsize=12)
 
         # Enhanced Image
-        enhanced_image = enhance_image(train_image, skeletonise=True, min_wave_length=3)
+        try:
+            enhanced_image = enhance_image(train_image, skeletonise=True, min_wave_length=3)
+        except Exception as e:
+            enhanced_image = enhance_image(train_image, skeletonise=True, min_wave_length=1)
         ax_enhanced = self.figure_enhanced.subplots(1, 1)
         # FOr Query Image
         for y, x in self.termin_disp.keys():

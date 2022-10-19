@@ -159,9 +159,9 @@ def ridge_frequency(image: np.array, mask, orient: int, block_size: int, window_
 
     non_zero_elems_in_freq = freq_1d[0][ind]
 
-    # median_freq = np.mean(non_zero_elems_in_freq)
+    median_freq = np.mean(non_zero_elems_in_freq)
     # TODO: (Dragos) Review
-    median_freq = np.median(non_zero_elems_in_freq)
+    # median_freq = np.median(non_zero_elems_in_freq)
 
     return freq, median_freq
 
