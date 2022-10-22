@@ -41,8 +41,8 @@ def match_tuples(tuple_base: dict, tuple_test: dict, th_range: float = .01, th_a
     # Tuple-wise comparison with all tuple profiles in the test image.
     for i, (m, [ratios, angles]) in enumerate(tuple_base.items()):
         # Explore matching ratios.
-        matching_values = (ratios_test == ratios).sum(1)
 
+        matching_values = (ratios_test == ratios).sum(1)
         # Tuples found to match with this base tuple. 
         matching_indices = np.where((matching_values == matching_values.max()) & (matching_values >= 2))[0]
 
@@ -81,7 +81,6 @@ def check_edges(edge_a, edge_b, threshold: float = .05):
 
 
 def edge_matching(edges_base: list, edges_test: list):
-
     matched_edges = []
 
     for i in range(max(len(edges_base), len(edges_test))):

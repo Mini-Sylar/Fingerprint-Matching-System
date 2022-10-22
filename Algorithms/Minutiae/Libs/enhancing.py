@@ -62,7 +62,7 @@ def enhance_image(image: np.array, block_orientation: int = 16, threshold: float
         image_enhanced = clean_points(image_enhanced)
 
     # Normalising image and processing background - and ridges.
-    # image_enhanced = image_enhanced // image_enhanced.max()  # [0, 1] values
+    image_enhanced = image_enhanced // image_enhanced.max()  # [0, 1] values
 
     # Invert colours if the background is dark.
     # image_enhanced = swap(image_enhanced) if image_enhanced.mean() < .5 else image_enhanced
@@ -159,9 +159,9 @@ def ridge_frequency(image: np.array, mask, orient: int, block_size: int, window_
 
     non_zero_elems_in_freq = freq_1d[0][ind]
 
-    # median_freq = np.mean(non_zero_elems_in_freq)
+    median_freq = np.mean(non_zero_elems_in_freq)
     # TODO: (Dragos) Review
-    median_freq = np.median(non_zero_elems_in_freq)
+    # median_freq = np.median(non_zero_elems_in_freq)
 
     return freq, median_freq
 

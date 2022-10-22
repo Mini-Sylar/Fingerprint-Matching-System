@@ -3,6 +3,9 @@ import numpy as np
 from skimage.morphology import skeletonize
 
 
+thresh = None
+
+
 def clean_points(image: np.array, filter_size: int = 6):
     """
     Remove debris from the image - 1x1 filled pixel areas.
@@ -157,7 +160,7 @@ def binarise(image: np.ndarray, window_size: int = 8, threshold: int = None, del
             # Rolling window array and mean of window-contained values.
             window = template[i: i + window_size, j: j + window_size]
             threshold_val = window.mean() if threshold is None else threshold
-            
+            thresh = threshold_val
             # Pixel iteration within the window.
             for p in range(0, window.size):
                 
@@ -165,8 +168,7 @@ def binarise(image: np.ndarray, window_size: int = 8, threshold: int = None, del
                     template[i + p // window_size][j + p % window_size] = 0
                 elif window[p // window_size][p % window_size] >= threshold_val * delta:
                     template[i + p // window_size][j + p % window_size] = 255
-
     # Store as integer to save memory.
     template = template.astype("uint8")
-    
+    print(thresh)
     return template
