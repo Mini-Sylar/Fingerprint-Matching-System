@@ -24,26 +24,6 @@ from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 text_filter = "Images ({})".format(
     " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
-# collect Data Here
-workbook = xlsxwriter.Workbook(f"Data_Subject_1_Altered_Medium_Right_Hand_M.xlsx")
-worksheet = workbook.add_worksheet()
-worksheet.set_column(0, 13, 50)
-# Set titles here
-sheet_titles = {0: "Fingerprint image",
-
-                1: "Alteration Type",
-
-                2: "Match Score (SIFT)",
-                3: "Time (SIFT)",
-                4: "Verdict (SIFT)",
-
-                5: "Match Score (Minutiae)",
-                6: "Time (Minutiae)",
-                7: "Verdict (Minutiae)",
-                }
-for value, title in enumerate(sheet_titles.values()):
-    worksheet.write(0, value, title)
-
 
 class UiCode(Ui_MainWindow, QMainWindow):
     def __init__(self):
@@ -76,7 +56,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
         # Get Data
-        self.record_data.clicked.connect(lambda : self.write_data(self.row))
+        # self.record_data.clicked.connect(lambda : self.write_data(self.row))
         # Run minutiae
         self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
@@ -85,7 +65,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         default_text_query = "Path to query image will show here"
         if self.Path_To_Train.text() != default_text_train and self.Path_To_Query.text() != default_text_query:
             self.run_sift_research.setEnabled(True)
-            self.record_data.setEnabled(True)
+            # self.record_data.setEnabled(True)
             self.run_minutiae.setEnabled(True)
 
     def enableButtons(self):
@@ -232,7 +212,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.Final_Image_Container.addWidget(self.toolbar)
         self.Final_Image_Container.addWidget(self.canvas)
         # Create Canvas For Gaussian Images
-        self.figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
+        self.figure_Gaussian = plt.figure(num=2, figsize=(7, 6))
         self.canvas_Gaussian = FigureCanvas(self.figure_Gaussian)
         self.toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
         self.Show_Gaussian_Images.addWidget(self.toolbar_Gaussian)
@@ -277,13 +257,11 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Render Images
         Gaussian_images = self.sift_train.showGaussianBlurImages()
         # create a 10 by 10 grid here
-        plt.figure(num=2, figsize=(10, 10))  # specifying the overall grid size
-        # Change font size to make sure everything fits in the canvas
-        plt.rcParams.update({'font.size': 8})
-        for i in range(len(Gaussian_images)):
-            plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
-            plt.imshow(Gaussian_images[i], cmap='Greys_r')
-        # plt.tight_layout()
+        ax = self.figure_Gaussian.subplots(7, 6)  # specifying the overall grid size
+        self.figure_Gaussian.suptitle('Scale Space Construction', fontsize=12)
+        for i in range(7):
+            for j in range(6):
+                ax[i, j].imshow(Gaussian_images[i * 6 + j], cmap='gray')
         # Set Details in Label Here
         self.G_Scale_Count.setText(str(len(Gaussian_images)))
         self.G_Octaves.setText(str((len(Gaussian_images)) // 6))
@@ -297,7 +275,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # # create a 10 by 10 grid here
         plt.figure(num=3, figsize=(10, 10))  # specifying the overall grid size
         plt.rcParams.update({'font.size': 8})
-        plt.title("Gaussian Scale Space and Extrema")
+        plt.title("Difference of Gaussian Images")
         for i in range(len(doG_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
             plt.imshow(doG_images[i], cmap='Greys_r')
@@ -538,39 +516,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.minutiae_verdict.setText("Fingerprints do not match")
             self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
-
-    def write_data(self,row):
-        #   Write name of file to Excel sheet
-        existingWorksheet = workbook.get_worksheet_by_name('Sheet1')
-        query_title = self.Path_To_Query.text().split("/")
-        train_title = self.Path_To_Train.text().split("/")
-        # Write Query Image Here
-        worksheet.write(row, 0, f"{query_title[-1]}\n{train_title[-1]}")
-        # Add Alteration Type
-        worksheet.write(row, 1, train_title[-2])
-        #### SIFT ####
-        worksheet.write(row, 2, self.Match_Score.text())
-        # Time
-        worksheet.write(row, 3, self.time_taken)
-        # Verdict
-        worksheet.write(row, 4, self.Verdict.text())
-
-        #### Minutiae ####
-        worksheet.write(row, 5, self.min_score_value.text())
-        # Time
-        worksheet.write(row, 6, self.time_taken_minutiae)
-        # Verdict
-        worksheet.write(row, 7, self.minutiae_verdict.text())
-        self.row = self.row +2
-        # workbook.close()
-        self.statusbar.showMessage("Data Written Successfully", msecs=10000)
-
-    def closeEvent(self, event):
-        try:
-            workbook.close()
-        except:
-            print("Workbook not created")
-        super().closeEvent(event)
 
 
 if __name__ == "__main__":
