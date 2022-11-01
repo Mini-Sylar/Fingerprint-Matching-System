@@ -4,8 +4,6 @@ from datetime import datetime
 import cv2
 import matplotlib.patches as mpatches
 import numpy as np
-import xlsxwriter
-from PyQt5.QtGui import QImageReader
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -22,27 +20,6 @@ from Algorithms.Minutiae.Minutiae_OBJ import *
 from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 
-text_filter = "Images ({})".format(
-    " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
-# collect Data Here
-workbook = xlsxwriter.Workbook(f"Data_Subject_1_Altered_Medium_Right_Hand_M.xlsx")
-worksheet = workbook.add_worksheet()
-worksheet.set_column(0, 13, 50)
-# Set titles here
-sheet_titles = {0: "Fingerprint image",
-
-                1: "Alteration Type",
-
-                2: "Match Score (SIFT)",
-                3: "Time (SIFT)",
-                4: "Verdict (SIFT)",
-
-                5: "Match Score (Minutiae)",
-                6: "Time (Minutiae)",
-                7: "Verdict (Minutiae)",
-                }
-for value, title in enumerate(sheet_titles.values()):
-    worksheet.write(0, value, title)
 
 
 class UiCode(Ui_MainWindow, QMainWindow):
