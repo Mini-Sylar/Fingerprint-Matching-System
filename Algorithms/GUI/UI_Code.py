@@ -4,6 +4,8 @@ from datetime import datetime
 import cv2
 import matplotlib.patches as mpatches
 import numpy as np
+import xlsxwriter
+from PyQt5.QtGui import QImageReader
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -20,7 +22,8 @@ from Algorithms.Minutiae.Minutiae_OBJ import *
 from Algorithms.SIFT.SIFT_OBJ import SIFT
 
 
-
+text_filter = "Images ({})".format(
+    " ".join(["*.{}".format(fo.data().decode()) for fo in QImageReader.supportedImageFormats()]))
 
 class UiCode(Ui_MainWindow, QMainWindow):
     def __init__(self):
@@ -209,7 +212,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.Final_Image_Container.addWidget(self.toolbar)
         self.Final_Image_Container.addWidget(self.canvas)
         # Create Canvas For Gaussian Images
-        self.figure_Gaussian = plt.figure(num=2, figsize=(10, 10))
+        self.figure_Gaussian = plt.figure(num=2, figsize=(7, 6))
         self.canvas_Gaussian = FigureCanvas(self.figure_Gaussian)
         self.toolbar_Gaussian = NavigationToolbar(self.canvas_Gaussian, self)
         self.Show_Gaussian_Images.addWidget(self.toolbar_Gaussian)
@@ -254,13 +257,11 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # Render Images
         Gaussian_images = self.sift_train.showGaussianBlurImages()
         # create a 10 by 10 grid here
-        plt.figure(num=2, figsize=(10, 10))  # specifying the overall grid size
-        # Change font size to make sure everything fits in the canvas
-        plt.rcParams.update({'font.size': 8})
-        for i in range(len(Gaussian_images)):
-            plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
-            plt.imshow(Gaussian_images[i], cmap='Greys_r')
-        plt.tight_layout()
+        ax = self.figure_Gaussian.subplots(7, 6)  # specifying the overall grid size
+        self.figure_Gaussian.suptitle('Scale Space Construction', fontsize=12)
+        for i in range(7):
+            for j in range(6):
+                ax[i, j].imshow(Gaussian_images[i * 6 + j], cmap='gray')
         # Set Details in Label Here
         self.G_Scale_Count.setText(str(len(Gaussian_images)))
         self.G_Octaves.setText(str((len(Gaussian_images)) // 6))
@@ -274,7 +275,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         # # create a 10 by 10 grid here
         plt.figure(num=3, figsize=(10, 10))  # specifying the overall grid size
         plt.rcParams.update({'font.size': 8})
-        plt.title("Gaussian Scale Space and Extrema")
+        plt.title("Difference of Gaussian Images")
         for i in range(len(doG_images)):
             plt.subplot(7, 5, i + 1)  # the number of images in the grid is 5*5 (25)
             plt.imshow(doG_images[i], cmap='Greys_r')
@@ -515,13 +516,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.minutiae_verdict.setText("Fingerprints do not match")
             self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
-
-    def closeEvent(self, event):
-        try:
-            workbook.close()
-        except:
-            print("Workbook not created")
-        super().closeEvent(event)
 
 
 if __name__ == "__main__":

@@ -73,10 +73,8 @@ class Ui_MainWindow(object):
         self.verticalLayout.addLayout(self.Info_Container)
         self.SIFT.addTab(self.SIFT_Matches, "")
         self.Gaussian = QtWidgets.QWidget()
-        self.Gaussian.setMaximumSize(QtCore.QSize(16777215, 500))
         self.Gaussian.setObjectName("Gaussian")
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.Gaussian)
-        self.verticalLayout_9.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.Show_Gaussian_Images = QtWidgets.QVBoxLayout()
         self.Show_Gaussian_Images.setObjectName("Show_Gaussian_Images")
@@ -337,8 +335,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.SIFT.setCurrentIndex(1)
-        self.Minutiae.setCurrentIndex(0)
+        self.SIFT.setCurrentIndex(0)
+        self.Minutiae.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
