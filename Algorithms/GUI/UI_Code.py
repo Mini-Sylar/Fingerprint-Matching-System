@@ -76,7 +76,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         self.generate_DOG_images.clicked.connect(self.show_DOG_SIFT_Research)
         self.generate_gaussian_images.clicked.connect(self.show_Gaussian_SIFT_Research)
         # Get Data
-        self.record_data.clicked.connect(lambda : self.write_data(self.row))
+        # self.record_data.clicked.connect(lambda : self.write_data(self.row))
         # Run minutiae
         self.run_minutiae.clicked.connect(self.run_minutiae_algorithm)
 
