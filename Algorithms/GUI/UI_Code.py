@@ -85,7 +85,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         default_text_query = "Path to query image will show here"
         if self.Path_To_Train.text() != default_text_train and self.Path_To_Query.text() != default_text_query:
             self.run_sift_research.setEnabled(True)
-            self.record_data.setEnabled(True)
+            # self.record_data.setEnabled(True)
             self.run_minutiae.setEnabled(True)
 
     def enableButtons(self):
@@ -283,7 +283,7 @@ class UiCode(Ui_MainWindow, QMainWindow):
         for i in range(len(Gaussian_images)):
             plt.subplot(7, 6, i + 1)  # the number of images in the grid is 7*6 (42)
             plt.imshow(Gaussian_images[i], cmap='Greys_r')
-        # plt.tight_layout()
+        plt.tight_layout()
         # Set Details in Label Here
         self.G_Scale_Count.setText(str(len(Gaussian_images)))
         self.G_Octaves.setText(str((len(Gaussian_images)) // 6))
@@ -538,32 +538,6 @@ class UiCode(Ui_MainWindow, QMainWindow):
             self.minutiae_verdict.setText("Fingerprints do not match")
             self.min_score_value.setStyleSheet("color:red;")
             self.min_score_value.setText(str(self.minutiae_value))  # Match Score here
-
-    def write_data(self,row):
-        #   Write name of file to Excel sheet
-        existingWorksheet = workbook.get_worksheet_by_name('Sheet1')
-        query_title = self.Path_To_Query.text().split("/")
-        train_title = self.Path_To_Train.text().split("/")
-        # Write Query Image Here
-        worksheet.write(row, 0, f"{query_title[-1]}\n{train_title[-1]}")
-        # Add Alteration Type
-        worksheet.write(row, 1, train_title[-2])
-        #### SIFT ####
-        worksheet.write(row, 2, self.Match_Score.text())
-        # Time
-        worksheet.write(row, 3, self.time_taken)
-        # Verdict
-        worksheet.write(row, 4, self.Verdict.text())
-
-        #### Minutiae ####
-        worksheet.write(row, 5, self.min_score_value.text())
-        # Time
-        worksheet.write(row, 6, self.time_taken_minutiae)
-        # Verdict
-        worksheet.write(row, 7, self.minutiae_verdict.text())
-        self.row = self.row +2
-        # workbook.close()
-        self.statusbar.showMessage("Data Written Successfully", msecs=10000)
 
     def closeEvent(self, event):
         try:
