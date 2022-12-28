@@ -8,6 +8,8 @@
 ## Data
 Found in [Data](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Algorithms/Data)
 
+## DATA GENERATION
+Data generation script can be found in [AUTOMATE DATA COLLECTION](https://github.com/Mini-Sylar/Fingerprint-Matching-System/blob/main/Algorithms/GUI/CollectData.py)
 ## Deliverables
 [FINAL SUBMISSION](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables/FinalSubmission)
 
