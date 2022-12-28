@@ -9,4 +9,8 @@
 Found in [Data](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Algorithms/Data)
 
 ## Deliverables
-[Deliverables](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables)
+[FINAL SUBMISSION](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables/FinalSubmission)
+
+<hr/>
+
+[HISTORY OF CHANGES](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables)
