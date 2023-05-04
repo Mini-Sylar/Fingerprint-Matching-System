@@ -3,11 +3,12 @@
 
 ## How to use
 ```
-- pip install all requirements in requirements.txt in algorithms folder
-- Run Ui_code.py in ALGORITHMS > GUI > UI_CODE.py
+- pip install all requirements   (Algorithms > requirements.txt)
+
+- Run Ui_code.py     (ALGORITHMS > GUI > UI_CODE.py)
 ```
 
-## Data
+## Sample Data & Results
 Sample results found in [Data](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Algorithms/Data)
 
 ## DATA GENERATION
@@ -15,13 +16,17 @@ Automated data generation script can be found in [AUTOMATE DATA COLLECTION](http
 
 
 ## Deliverables
-[FINAL SUBMISSION](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables/FinalSubmission)
+Writeup can be found in
+[THESIS](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables)
 
 <hr/>
 
-[HISTORY OF CHANGES](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Deliverables)
+## Credits
+All references and citations can be found in [REFERENCES](https://github.com/Mini-Sylar/Fingerprint-Matching-System/blob/main/Deliverables/A%20Comparative%20Analysis%20of%20Fingerprint%20Matching%20Algorithms%20v.2.0.docx) 
 
-## GOOGLE DRIVE
-Deliverables including presentation powerpoint as PDF found here
-<br/>
-[Drive Link](https://drive.google.com/drive/folders/19heDDQ02fLiwXDLtcppyTJVnRMKAb1FT?usp=sharing)
+## Screenshots
+![image](./Screenshots/screen1.png)
+![image](./Screenshots/Picture2.png)
+![image](./Screenshots/Picture3.png)
+![image](./Screenshots/Picture4.png)
+![image](./Screenshots/Picture5.png)
