@@ -8,10 +8,14 @@
 - Run Ui_code.py     (ALGORITHMS > GUI > UI_CODE.py)
 ```
 
+## Dataset 
+[Fingerprint Sample Dataset](https://www.kaggle.com/datasets/ruizgara/socofing)
+
+
 ## Sample Data & Results
 Sample results found in [Data](https://github.com/Mini-Sylar/Fingerprint-Matching-System/tree/main/Algorithms/Data)
 
-## DATA GENERATION
+## Data Generation
 Automated data generation script can be found in [AUTOMATE DATA COLLECTION](https://github.com/Mini-Sylar/Fingerprint-Matching-System/blob/main/Algorithms/GUI/CollectData.py)
 
 
