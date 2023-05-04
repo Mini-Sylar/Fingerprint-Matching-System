@@ -25,8 +25,8 @@ Writeup can be found in
 All references and citations can be found in [REFERENCES](https://github.com/Mini-Sylar/Fingerprint-Matching-System/blob/main/Deliverables/A%20Comparative%20Analysis%20of%20Fingerprint%20Matching%20Algorithms%20v.2.0.docx) 
 
 ## Screenshots
-![image](./Screenshots/screen1.png)
-![image](./Screenshots/Picture2.png)
-![image](./Screenshots/Picture3.png)
-![image](./Screenshots/Picture4.png)
-![image](./Screenshots/Picture5.png)
+![image](./screenshots/screen1.png)
+![image](./screenshots/Picture2.png)
+![image](./screenshots/Picture3.png)
+![image](./screenshots/Picture4.png)
+![image](./screenshots/Picture5.png)
