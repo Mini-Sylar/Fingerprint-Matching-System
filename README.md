@@ -1,7 +1,7 @@
 # Fingerprint-Matching-System
- Fingerprint Matching System Final Year Project 
+ Fingerprint Matching System using Scale Invariant Feature Transform and Minutiae Matching. This project was done as a final year project for the award of a BSc. in Computer Science at the University of Ghana, Legon.
 
-## How to use
+## How to setup
 ```
 - pip install all requirements   (Algorithms > requirements.txt)
 
